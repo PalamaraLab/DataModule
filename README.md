@@ -1,12 +1,11 @@
 [![Unit tests: Windows](https://github.com/PalamaraLab/DataModule/workflows/Unit%20tests:%20Windows/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 [![Unit tests: Ubuntu](https://github.com/PalamaraLab/DataModule/workflows/Unit%20tests:%20Ubuntu/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 [![Unit tests: macOS](https://github.com/PalamaraLab/DataModule/workflows/Unit%20tests:%20macOS/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
-[![Regression test](https://github.com/PalamaraLab/DataModule/workflows/Regression%20test/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 
 [![Static analysis checks](https://github.com/PalamaraLab/DataModule/workflows/Static%20analysis%20checks/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 [![Sanitiser checks](https://github.com/PalamaraLab/DataModule/workflows/Sanitiser%20checks/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
-[![codecov](https://codecov.io/gh/PalamaraLab/DataModule/branch/master/graph/badge.svg)](https://codecov.io/gh/PalamaraLab/DataModule)
-[![BCH compliance](https://bettercodehub.com/edge/badge/PalamaraLab/DataModule?branch=master)](https://bettercodehub.com/results/PalamaraLab/DataModule)
+[![codecov](https://codecov.io/gh/PalamaraLab/DataModule/branch/main/graph/badge.svg)](https://codecov.io/gh/PalamaraLab/DataModule)
+[![BCH compliance](https://bettercodehub.com/edge/badge/PalamaraLab/DataModule?branch=main)](https://bettercodehub.com/results/PalamaraLab/DataModule)
 
 # Data Module
 

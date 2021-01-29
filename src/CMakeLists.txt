@@ -12,12 +12,15 @@ message(STATUS "Found zlib ${ZLIB_VERSION_STRING}")
 
 set(
         data_module_src
+        HapsMatrixType.cpp
         Utils.cpp
 )
 
 set(
         data_module_hdr
         EigenTypes.hpp
+        FileFormats.hpp
+        HapsMatrixType.hpp
         Utils.hpp
 )
 

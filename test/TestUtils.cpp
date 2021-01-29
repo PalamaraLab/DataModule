@@ -150,4 +150,33 @@ TEST_CASE("Util: read gz lines with miscellaneous checks", "[Utils]") {
   }
 }
 
+TEST_CASE("Util: test getFileInDirWithExt", "[Utils]") {
+
+  const std::string pathPrefix = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/test";
+
+  // No matching extensions
+  {
+    const auto path = getFileInDirWithExt(pathPrefix, {".not_exist"});
+    CHECK(path == fs::path{});
+  }
+
+  // No extensions supplied
+  {
+    const auto path = getFileInDirWithExt(pathPrefix, {});
+    CHECK(path == fs::path{});
+  }
+
+  // Valid extension: .hap found
+  {
+    const auto path = getFileInDirWithExt(pathPrefix, {".hap", ".samples"});
+    CHECK(path == fs::path{pathPrefix + ".hap"});
+  }
+
+  // Valid extension: .samples found
+  {
+    const auto path = getFileInDirWithExt(pathPrefix, {".samples", ".hap"});
+    CHECK(path == fs::path{pathPrefix + ".samples"});
+  }
+}
+
 } // namespace asmc

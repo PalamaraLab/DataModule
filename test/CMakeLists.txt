@@ -12,6 +12,7 @@ add_definitions(-DDATA_MODULE_TEST_DIR=\"${CMAKE_CURRENT_LIST_DIR}\")
 
 set(
         test_src
+        TestHapsMatrixType.cpp
         TestUtils.cpp
 )
 

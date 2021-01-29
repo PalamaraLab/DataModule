@@ -5,6 +5,7 @@
 #define DATA_MODULE_UTILS_HPP
 
 #include <algorithm>
+#include <filesystem>
 #include <numeric>
 #include <string>
 #include <string_view>
@@ -14,6 +15,8 @@
 
 namespace asmc {
 
+namespace fs = std::filesystem;
+
 /**
  * Read the next line from a gzip file.
  *
@@ -21,6 +24,8 @@ namespace asmc {
  * @return a string contating the next line contained in the gzip file, without a trailing newline character
  */
 std::string readNextLineFromGzip(gzFile& gzFileHandle);
+
+fs::path getFileInDirWithExt(std::string_view baseName, const std::vector<std::string>& possibleExt);
 
 } // namespace asmc
 

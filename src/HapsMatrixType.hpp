@@ -4,10 +4,10 @@
 #ifndef DATA_MODULE_HAPS_MATRIX_TYPE_HPP
 #define DATA_MODULE_HAPS_MATRIX_TYPE_HPP
 
-#include "FileFormats.hpp"
-
 #include <filesystem>
 #include <string_view>
+
+#include <fmt/format.h>
 
 namespace asmc {
 
@@ -16,16 +16,19 @@ namespace fs = std::filesystem;
 class HapsMatrixType {
 
 private:
-  void CreateFromHapsPlusSamples(std::string_view filePath);
-
   void ReadSamplesFile(const fs::path& samplesFile);
 
   void ReadHapsFile(const fs::path& samplesFile);
 
+  HapsMatrixType() = default;
 
 public:
-  HapsMatrixType(FileFormat fileFormat, std::string_view filePath);
+  static HapsMatrixType CreateFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
+                                                  std::string_view mapFile);
 
+  void print() const {
+    fmt::print("testing...\n");
+  }
 };
 
 } // namespace asmc

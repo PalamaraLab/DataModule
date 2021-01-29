@@ -21,11 +21,18 @@ namespace fs = std::filesystem;
  * Read the next line from a gzip file.
  *
  * @param gzFileHandle handle to a file opened with zlib's gzopen
- * @return a string contating the next line contained in the gzip file, without a trailing newline character
+ * @return a string containing the next line contained in the gzip file, without a trailing newline character
  */
 std::string readNextLineFromGzip(gzFile& gzFileHandle);
 
-fs::path getFileInDirWithExt(std::string_view baseName, const std::vector<std::string>& possibleExt);
+/**
+ * Split a string of text into a vector of strings, splitting by a given delimiter.
+ *
+ * @param text the text to split
+ * @param del the delimiter to split by
+ * @return a vector of substrings of text, split by del
+ */
+std::vector<std::string> splitTextByDelimiter(std::string_view text, std::string_view del);
 
 } // namespace asmc
 

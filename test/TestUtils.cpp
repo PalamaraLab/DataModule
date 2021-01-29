@@ -150,32 +150,35 @@ TEST_CASE("Util: read gz lines with miscellaneous checks", "[Utils]") {
   }
 }
 
-TEST_CASE("Util: test getFileInDirWithExt", "[Utils]") {
+TEST_CASE("Util: test splitTextByDelimiter", "[Utils]") {
 
-  const std::string pathPrefix = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/test";
-
-  // No matching extensions
+  // Test space delimited
   {
-    const auto path = getFileInDirWithExt(pathPrefix, {".not_exist"});
-    CHECK(path == fs::path{});
+    const std::string text = "a b c def";
+    const auto splitText = splitTextByDelimiter(text, " ");
+    CHECK(splitText == std::vector<std::string>{"a", "b", "c", "def"});
   }
 
-  // No extensions supplied
+  // Test comma delimited
   {
-    const auto path = getFileInDirWithExt(pathPrefix, {});
-    CHECK(path == fs::path{});
+    const std::string text = "a b c, def";
+    const auto splitText = splitTextByDelimiter(text, ",");
+    CHECK(splitText == std::vector<std::string>{"a b c", " def"});
   }
 
-  // Valid extension: .hap found
+  // Test multi-character delimited
   {
-    const auto path = getFileInDirWithExt(pathPrefix, {".hap", ".samples"});
-    CHECK(path == fs::path{pathPrefix + ".hap"});
+    const std::string text = "abc>=def>=ghi";
+    const auto splitText = splitTextByDelimiter(text, ">=");
+    CHECK(splitText == std::vector<std::string>{"abc", "def", "ghi"});
   }
 
-  // Valid extension: .samples found
+  // Test empty string
   {
-    const auto path = getFileInDirWithExt(pathPrefix, {".samples", ".hap"});
-    CHECK(path == fs::path{pathPrefix + ".samples"});
+    const std::string text;
+    CHECK(text.empty());
+    const auto splitText = splitTextByDelimiter(text, " ");
+    CHECK(splitText.empty());
   }
 }
 

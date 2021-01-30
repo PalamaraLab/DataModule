@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <string_view>
+#include <vector>
 
 #include <fmt/format.h>
 
@@ -16,7 +17,6 @@ namespace fs = std::filesystem;
 class HapsMatrixType {
 
 private:
-
   unsigned long mNumIndividuals = 0ul;
   std::vector<unsigned long> mPhysicalPositions;
   std::vector<double> mGeneticPositions;

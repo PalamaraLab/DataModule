@@ -2,7 +2,8 @@
 // See accompanying LICENSE and COPYING for copyright notice and full details.
 
 #include "HapsMatrixType.hpp"
-#include "Utils.hpp"
+#include "utils/FileUtils.hpp"
+#include "utils/StringUtils.hpp"
 
 #include <cassert>
 #include <exception>
@@ -11,8 +12,6 @@
 #include <vector>
 
 #include <fmt/core.h>
-
-#include <iostream>
 
 namespace asmc {
 

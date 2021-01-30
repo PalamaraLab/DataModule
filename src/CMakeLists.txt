@@ -17,14 +17,16 @@ message(STATUS "Found zlib ${ZLIB_VERSION_STRING}")
 set(
         data_module_src
         HapsMatrixType.cpp
-        Utils.cpp
+        utils/FileUtils.cpp
+        utils/StringUtils.cpp
 )
 
 set(
         data_module_hdr
-        EigenTypes.hpp
         HapsMatrixType.hpp
-        Utils.hpp
+        utils/EigenTypes.hpp
+        utils/FileUtils.hpp
+        utils/StringUtils.hpp
 )
 
 add_library(data_module_lib STATIC ${data_module_src} ${data_module_hdr})

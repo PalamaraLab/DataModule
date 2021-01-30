@@ -1,15 +1,15 @@
 // This file is part of https://github.com/PalamaraLab/DataModule which is released under the GPL-3.0 license.
 // See accompanying LICENSE and COPYING for copyright notice and full details.
 
-#include "Utils.hpp"
+#include "utils/FileUtils.hpp"
 
 #include <catch2/catch.hpp>
-
-#include <zlib.h>
 
 #include <filesystem>
 #include <string>
 #include <vector>
+
+#include <zlib.h>
 
 namespace asmc {
 
@@ -29,7 +29,7 @@ std::vector<std::string> readLinesFromGzFile(const std::string& fileName) {
   return lines;
 }
 
-TEST_CASE("Util: read gz lines from basic file", "[Utils]") {
+TEST_CASE("utils/FileUtils: read gz lines from basic file", "[utils/FileUtils]") {
 
   // Basic file, newline at end
   {
@@ -51,7 +51,7 @@ TEST_CASE("Util: read gz lines from basic file", "[Utils]") {
   }
 }
 
-TEST_CASE("Util: read gz lines of length 1 less than buffer", "[Utils]") {
+TEST_CASE("utils/FileUtils: read gz lines of length 1 less than buffer", "[utils/FileUtils]") {
 
   // Line with 511 z characters and newline
   {
@@ -71,7 +71,7 @@ TEST_CASE("Util: read gz lines of length 1 less than buffer", "[Utils]") {
   }
 }
 
-TEST_CASE("Util: read gz lines of length same as buffer", "[Utils]") {
+TEST_CASE("utils/FileUtils: read gz lines of length same as buffer", "[utils/FileUtils]") {
 
   // Line with 512 z characters and newline
   {
@@ -91,7 +91,7 @@ TEST_CASE("Util: read gz lines of length same as buffer", "[Utils]") {
   }
 }
 
-TEST_CASE("Util: read gz lines of length 1 more than buffer", "[Utils]") {
+TEST_CASE("utils/FileUtils: read gz lines of length 1 more than buffer", "[utils/FileUtils]") {
 
   // Line with 513 z characters and newline
   {
@@ -111,7 +111,7 @@ TEST_CASE("Util: read gz lines of length 1 more than buffer", "[Utils]") {
   }
 }
 
-TEST_CASE("Util: read gz lines that are very long", "[Utils]") {
+TEST_CASE("utils/FileUtils: read gz lines that are very long", "[utils/FileUtils]") {
 
   // Line with 8192 z characters and newline
   {
@@ -131,7 +131,7 @@ TEST_CASE("Util: read gz lines that are very long", "[Utils]") {
   }
 }
 
-TEST_CASE("Util: read gz lines with miscellaneous checks", "[Utils]") {
+TEST_CASE("utils/FileUtils: read gz lines with miscellaneous checks", "[utils/FileUtils]") {
 
   // Completely empty file
   {
@@ -147,38 +147,6 @@ TEST_CASE("Util: read gz lines with miscellaneous checks", "[Utils]") {
     CHECK(lines.at(0).empty());
     CHECK(lines.at(1).empty());
     CHECK(lines.at(2).empty());
-  }
-}
-
-TEST_CASE("Util: test splitTextByDelimiter", "[Utils]") {
-
-  // Test space delimited
-  {
-    const std::string text = "a b c def";
-    const auto splitText = splitTextByDelimiter(text, " ");
-    CHECK(splitText == std::vector<std::string>{"a", "b", "c", "def"});
-  }
-
-  // Test comma delimited
-  {
-    const std::string text = "a b c, def";
-    const auto splitText = splitTextByDelimiter(text, ",");
-    CHECK(splitText == std::vector<std::string>{"a b c", " def"});
-  }
-
-  // Test multi-character delimited
-  {
-    const std::string text = "abc>=def>=ghi";
-    const auto splitText = splitTextByDelimiter(text, ">=");
-    CHECK(splitText == std::vector<std::string>{"abc", "def", "ghi"});
-  }
-
-  // Test empty string
-  {
-    const std::string text;
-    CHECK(text.empty());
-    const auto splitText = splitTextByDelimiter(text, " ");
-    CHECK(splitText.empty());
   }
 }
 

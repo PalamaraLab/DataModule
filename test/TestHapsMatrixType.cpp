@@ -54,7 +54,21 @@ TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") 
     CHECK(geneticPositions.at(2) == Approx(0.001256979));
     CHECK(geneticPositions.at(3) == Approx(0.0013181955));
   }
+}
 
+TEST_CASE("HapsMatrixType: test readSamplesFile", "[HapsMatrixType]") {
+
+  std::string goodHapsFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/test.hap";
+  std::string goodMapFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/test.map";
+
+  std::string badSamples1 = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/bad_header_1.samples";
+  std::string badSamples2 = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/bad_header_2.samples";
+
+  CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, badSamples1, goodMapFile),
+                    Catch::StartsWith("Expected fist row of .samples file "));
+
+  CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, badSamples2, goodMapFile),
+                    Catch::StartsWith("Expected second row of .samples file {} to start "));
 }
 
 } // namespace asmc

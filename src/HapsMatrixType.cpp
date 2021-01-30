@@ -42,18 +42,18 @@ void HapsMatrixType::readSamplesFile(const fs::path& samplesFile) {
   auto gzFile = gzopen(samplesFile.string().c_str(), "r");
 
   // Process first two lines that contain header information
-  {
-    std::vector<std::string> line1 = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
-    if (line1.size() < 3 || line1.at(0) != "ID_1" || line1.at(1) != "ID_2" || line1.at(2) != "missing") {
-      throw std::runtime_error(
-          fmt::format("Expected fist row of .samples file {} to start \"ID_1 ID_2 missing\"", samplesFile.string()));
-    }
+  std::vector<std::string> line1 = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
+  if (line1.size() < 3 || line1.at(0) != "ID_1" || line1.at(1) != "ID_2" || line1.at(2) != "missing") {
+    gzclose(gzFile);
+    throw std::runtime_error(
+        fmt::format("Expected fist row of .samples file {} to start \"ID_1 ID_2 missing\"", samplesFile.string()));
+  }
 
-    std::vector<std::string> line2 = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
-    if (line2.size() < 3 || line2.at(0) != "0" || line2.at(1) != "0" || line2.at(2) != "0") {
-      throw std::runtime_error(
-          fmt::format("Expected second row of .samples file {} to start \"0 0 0\"", samplesFile.string()));
-    }
+  std::vector<std::string> line2 = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
+  if (line2.size() < 3 || line2.at(0) != "0" || line2.at(1) != "0" || line2.at(2) != "0") {
+    gzclose(gzFile);
+    throw std::runtime_error(
+        fmt::format("Expected second row of .samples file {} to start \"0 0 0\"", samplesFile.string()));
   }
 
   // Read the individuals information

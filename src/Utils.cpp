@@ -7,7 +7,8 @@
 #include <string_view>
 
 #include <fmt/core.h>
-#include <range/v3/all.hpp>
+#include <range/v3/range/conversion.hpp>
+#include <range/v3/view/split.hpp>
 
 namespace asmc {
 

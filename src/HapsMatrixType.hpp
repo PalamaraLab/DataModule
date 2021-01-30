@@ -16,19 +16,31 @@ namespace fs = std::filesystem;
 class HapsMatrixType {
 
 private:
-  void ReadSamplesFile(const fs::path& samplesFile);
 
-  void ReadHapsFile(const fs::path& samplesFile);
+  unsigned long mNumIndividuals = 0ul;
+  std::vector<unsigned long> mPhysicalPositions;
+  std::vector<double> mGeneticPositions;
+
+  void readSamplesFile(const fs::path& samplesFile);
+
+  void readHapsFile(const fs::path& samplesFile);
+
+  void readMapFile(const fs::path& mapFile);
 
   HapsMatrixType() = default;
 
 public:
-  static HapsMatrixType CreateFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
+  static HapsMatrixType createFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
                                                   std::string_view mapFile);
 
   void print() const {
     fmt::print("testing...\n");
   }
+
+  [[nodiscard]] unsigned long getNumIndividuals() const;
+  [[nodiscard]] unsigned long getNumSites() const;
+  [[nodiscard]] const std::vector<unsigned long>& getPhysicalPositions() const;
+  [[nodiscard]] const std::vector<double>& getGeneticPositions() const;
 };
 
 } // namespace asmc

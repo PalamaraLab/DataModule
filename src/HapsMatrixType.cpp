@@ -4,6 +4,7 @@
 #include "HapsMatrixType.hpp"
 #include "Utils.hpp"
 
+#include <cassert>
 #include <exception>
 #include <filesystem>
 #include <string_view>
@@ -15,7 +16,7 @@
 
 namespace asmc {
 
-HapsMatrixType HapsMatrixType::CreateFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
+HapsMatrixType HapsMatrixType::createFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
                                                          std::string_view mapFile) {
 
   if (!fs::exists(hapsFile) || !fs::is_regular_file(hapsFile)) {
@@ -30,45 +31,81 @@ HapsMatrixType HapsMatrixType::CreateFromHapsPlusSamples(std::string_view hapsFi
 
   HapsMatrixType instance;
 
-  instance.ReadSamplesFile(samplesFile);
-  instance.ReadHapsFile(hapsFile);
+  instance.readSamplesFile(samplesFile);
+  instance.readMapFile(mapFile);
+  instance.readHapsFile(hapsFile);
 
   return instance;
 }
 
-void HapsMatrixType::ReadSamplesFile(const fs::path& file) {
+void HapsMatrixType::readSamplesFile(const fs::path& samplesFile) {
 
-  unsigned long numRecords = 0;
-
-  auto gzFile = gzopen(file.c_str(), "r");
+  auto gzFile = gzopen(samplesFile.string().c_str(), "r");
 
   // Process first two lines that contain header information
   {
-    // First two lines must have at least 3 entries
     std::vector<std::string> line1 = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
-    std::vector<std::string> line2 = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
-    if (line1.size() < 3 || line2.size() < 3) {
-      throw std::runtime_error(fmt::format(
-          "Expected {} to start with two header rows containing at least space-delimited columns", file.string()));
+    if (line1.size() < 3 || line1.at(0) != "ID_1" || line1.at(1) != "ID_2" || line1.at(2) != "missing") {
+      throw std::runtime_error(
+          fmt::format("Expected fist row of .samples file {} to start \"ID_1 ID_2 missing\"", samplesFile.string()));
     }
 
-    if (line2.at(0) != "0" || line2.at(1) != "0" || line2.at(2) != "0") {
-      throw std::runtime_error(fmt::format("Expected the second row of {} to start \"0 0 0\"", file.string()));
+    std::vector<std::string> line2 = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
+    if (line2.size() < 3 || line2.at(0) != "0" || line2.at(1) != "0" || line2.at(2) != "0") {
+      throw std::runtime_error(
+          fmt::format("Expected second row of .samples file {} to start \"0 0 0\"", samplesFile.string()));
     }
   }
 
+  // Read the individuals information
+  unsigned long numIndividuals = 0;
   while (!gzeof(gzFile)) {
     std::vector<std::string> line = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
     if (!line.empty()) {
-      numRecords++;
+      numIndividuals++;
+    }
+  }
+
+  mNumIndividuals = numIndividuals;
+
+  gzclose(gzFile);
+}
+
+void HapsMatrixType::readHapsFile(const fs::path& samplesFile) {
+  fmt::print("Reading {}\n", samplesFile.string());
+  mNumIndividuals += 0ul;
+}
+
+void HapsMatrixType::readMapFile(const fs::path& mapFile) {
+
+  auto gzFile = gzopen(mapFile.string().c_str(), "r");
+
+  while (!gzeof(gzFile)) {
+    std::vector<std::string> line = splitTextByDelimiter(readNextLineFromGzip(gzFile), "\t");
+    if (!line.empty()) {
+      assert(line.size() == 4ul);
+      mGeneticPositions.emplace_back(std::stod(line.at(2)));
+      mPhysicalPositions.emplace_back(std::stoul(line.at(3)));
     }
   }
 
   gzclose(gzFile);
 }
 
-void HapsMatrixType::ReadHapsFile(const fs::path& file) {
-  fmt::print("Reading {}\n", file.string());
+unsigned long HapsMatrixType::getNumIndividuals() const {
+  return mNumIndividuals;
+}
+
+unsigned long HapsMatrixType::getNumSites() const {
+  return mGeneticPositions.size();
+}
+
+const std::vector<unsigned long>& HapsMatrixType::getPhysicalPositions() const {
+  return mPhysicalPositions;
+}
+
+const std::vector<double>& HapsMatrixType::getGeneticPositions() const {
+  return mGeneticPositions;
 }
 
 } // namespace asmc

@@ -97,7 +97,7 @@ unsigned long HapsMatrixType::getNumIndividuals() const {
 }
 
 unsigned long HapsMatrixType::getNumSites() const {
-  return mGeneticPositions.size();
+  return static_cast<unsigned long>(mGeneticPositions.size());
 }
 
 const std::vector<unsigned long>& HapsMatrixType::getPhysicalPositions() const {

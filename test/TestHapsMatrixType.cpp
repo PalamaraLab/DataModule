@@ -68,7 +68,7 @@ TEST_CASE("HapsMatrixType: test readSamplesFile", "[HapsMatrixType]") {
                     Catch::StartsWith("Expected fist row of .samples file "));
 
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, badSamples2, goodMapFile),
-                    Catch::StartsWith("Expected second row of .samples file {} to start "));
+                    Catch::StartsWith("Expected second row of .samples file "));
 }
 
 } // namespace asmc

@@ -33,10 +33,6 @@ public:
   static HapsMatrixType createFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
                                                   std::string_view mapFile);
 
-  void print() const {
-    fmt::print("testing...\n");
-  }
-
   [[nodiscard]] unsigned long getNumIndividuals() const;
   [[nodiscard]] unsigned long getNumSites() const;
   [[nodiscard]] const std::vector<unsigned long>& getPhysicalPositions() const;

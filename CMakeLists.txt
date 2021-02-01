@@ -31,7 +31,6 @@ include(cmake/StaticAnalysers.cmake)
 
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
-option(MAKE_DOCS "Enable doxygen/sphinx commands" ON)
 
 #option(PYTHON_BINDINGS "Whether to build the python bindings" ON)
 
@@ -42,6 +41,10 @@ if (ENABLE_TESTING)
     add_subdirectory(test)
 endif ()
 
+option(MAKE_DOCS "Enable doxygen/sphinx commands" OFF)
+if (EXISTS ${CMAKE_SOURCE_DIR}/venv/bin/sphinx-build)
+    set(MAKE_DOCS ON)
+endif()
 if (MAKE_DOCS)
     set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
     add_subdirectory(docs)

@@ -4,6 +4,8 @@
 
 [![Static analysis checks](https://github.com/PalamaraLab/DataModule/workflows/Static%20analysis%20checks/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 [![Sanitiser checks](https://github.com/PalamaraLab/DataModule/workflows/Sanitiser%20checks/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
+
+[![Documentation](https://readthedocs.org/projects/data-module/badge/?version=latest)](https://data-module.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/PalamaraLab/DataModule/branch/main/graph/badge.svg)](https://codecov.io/gh/PalamaraLab/DataModule)
 [![BCH compliance](https://bettercodehub.com/edge/badge/PalamaraLab/DataModule?branch=main)](https://bettercodehub.com/results/PalamaraLab/DataModule)
 

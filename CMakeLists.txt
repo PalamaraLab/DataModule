@@ -31,6 +31,7 @@ include(cmake/StaticAnalysers.cmake)
 
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
+option(MAKE_DOCS "Enable doxygen/sphinx commands" ON)
 
 #option(PYTHON_BINDINGS "Whether to build the python bindings" ON)
 
@@ -39,6 +40,11 @@ add_subdirectory(src)
 if (ENABLE_TESTING)
     enable_testing()
     add_subdirectory(test)
+endif ()
+
+if (MAKE_DOCS)
+    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+    add_subdirectory(docs)
 endif ()
 
 option(ENABLE_UNITY "Enable Unity builds of projects" OFF)

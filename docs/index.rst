@@ -7,7 +7,12 @@ Welcome to Data Module's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   pages/file-formats
 
+Useful links
+============
+
+* :ref:`file_formats_main`
 
 Indices and tables
 ==================

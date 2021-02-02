@@ -8,14 +8,16 @@
 
 namespace asmc {
 
-using array_dt = Eigen::ArrayXd;
-using array_it = Eigen::ArrayXi;
-using vec_dt = Eigen::VectorXd;
-using rowvec_dt = Eigen::RowVectorXf;
-using three_dt = Eigen::Matrix3d;
-using four_dt = Eigen::Matrix4d;
+//using array_dt = Eigen::ArrayXd;
+//using array_it = Eigen::ArrayXi;
+//using vec_dt = Eigen::VectorXd;
+//using rowvec_dt = Eigen::RowVectorXf;
+//using three_dt = Eigen::Matrix3d;
+//using four_dt = Eigen::Matrix4d;
+//using mat_dt = Eigen::MatrixXd;
 
-using mat_dt = Eigen::MatrixXd;
+using mat_bool_t = Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic>;
+using index_t = Eigen::Index;
 
 } // namespace asmc
 

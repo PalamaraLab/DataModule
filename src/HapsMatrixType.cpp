@@ -70,9 +70,24 @@ void HapsMatrixType::readSamplesFile(const fs::path& samplesFile) {
   gzclose(gzFile);
 }
 
-void HapsMatrixType::readHapsFile(const fs::path& samplesFile) {
-  fmt::print("Reading {}\n", samplesFile.string());
-  mNumIndividuals += 0ul;
+void HapsMatrixType::readHapsFile(const fs::path& hapsFile) {
+
+  // Check that haps file is the expected shape, and size the data matrix appropriately
+  validateHapsFile(hapsFile);
+  mData.resize(static_cast<index_t>(getNumSites()), static_cast<index_t>(2ul * mNumIndividuals));
+
+  auto gzFile = gzopen(hapsFile.string().c_str(), "r");
+
+  for (index_t rowId = 0l; rowId < static_cast<index_t>(getNumSites()); ++rowId) {
+    std::vector<std::string> line = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
+    assert(line.size() == 2ul * mNumIndividuals + 5ul);
+    for (index_t colId = 0l; colId < static_cast<index_t>(2ul * mNumIndividuals); ++colId) {
+      assert(line[static_cast<size_t>(5l + colId)].size() == 1ul);
+      mData(rowId, colId) = line[static_cast<size_t>(5l + colId)] == "1";
+    }
+  }
+
+  gzclose(gzFile);
 }
 
 void HapsMatrixType::readMapFile(const fs::path& mapFile) {
@@ -86,6 +101,35 @@ void HapsMatrixType::readMapFile(const fs::path& mapFile) {
       mGeneticPositions.emplace_back(std::stod(line.at(2)));
       mPhysicalPositions.emplace_back(std::stoul(line.at(3)));
     }
+  }
+
+  gzclose(gzFile);
+}
+
+void HapsMatrixType::validateHapsFile(const fs::path& hapsFile) {
+  const unsigned long expectedNumCols = 2ul * mNumIndividuals + 5ul;
+
+  auto gzFile = gzopen(hapsFile.string().c_str(), "r");
+  std::vector<std::string> firstLine = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
+
+  if (firstLine.size() != expectedNumCols) {
+    gzclose(gzFile);
+    throw std::runtime_error(
+        fmt::format("Expected rows of .hap[s][.gz] file {} to contain 2x{}+5={} entries, but first row had {}",
+                    hapsFile.string(), mNumIndividuals, expectedNumCols, firstLine.size()));
+  }
+
+  unsigned long numRows = 1ul;
+  while (!gzeof(gzFile)) {
+    if (!readNextLineFromGzip(gzFile).empty()) {
+      numRows++;
+    }
+  }
+
+  if (numRows != getNumSites()) {
+    gzclose(gzFile);
+    throw std::runtime_error(fmt::format("Expected .hap[s][.gz] file {} to contain {} rows, but found {}",
+                                         hapsFile.string(), getNumSites(), numRows));
   }
 
   gzclose(gzFile);
@@ -105,6 +149,9 @@ const std::vector<unsigned long>& HapsMatrixType::getPhysicalPositions() const {
 
 const std::vector<double>& HapsMatrixType::getGeneticPositions() const {
   return mGeneticPositions;
+}
+const mat_bool_t& HapsMatrixType::getData() const {
+  return mData;
 }
 
 } // namespace asmc

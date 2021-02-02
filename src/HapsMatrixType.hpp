@@ -4,6 +4,8 @@
 #ifndef DATA_MODULE_HAPS_MATRIX_TYPE_HPP
 #define DATA_MODULE_HAPS_MATRIX_TYPE_HPP
 
+#include "utils/EigenTypes.hpp"
+
 #include <filesystem>
 #include <string_view>
 #include <vector>
@@ -20,12 +22,15 @@ private:
   unsigned long mNumIndividuals = 0ul;
   std::vector<unsigned long> mPhysicalPositions;
   std::vector<double> mGeneticPositions;
+  mat_bool_t mData;
 
   void readSamplesFile(const fs::path& samplesFile);
 
-  void readHapsFile(const fs::path& samplesFile);
+  void readHapsFile(const fs::path& hapsFile);
 
   void readMapFile(const fs::path& mapFile);
+
+  void validateHapsFile(const fs::path& hapsFile);
 
   HapsMatrixType() = default;
 
@@ -37,6 +42,7 @@ public:
   [[nodiscard]] unsigned long getNumSites() const;
   [[nodiscard]] const std::vector<unsigned long>& getPhysicalPositions() const;
   [[nodiscard]] const std::vector<double>& getGeneticPositions() const;
+  [[nodiscard]] const mat_bool_t& getData() const;
 };
 
 } // namespace asmc

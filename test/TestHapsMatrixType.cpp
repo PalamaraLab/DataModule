@@ -54,6 +54,22 @@ TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") 
     CHECK(geneticPositions.at(2) == Approx(0.001256979));
     CHECK(geneticPositions.at(3) == Approx(0.0013181955));
   }
+
+  const auto& data = hapsMatrix.getData();
+  CHECK(data.rows() == 4l);
+  CHECK(data.cols() == 6l);
+  CHECK(data(0,0));
+  CHECK(!data(0,1));
+  CHECK(!data(0,2));
+  CHECK(!data(0,3));
+  CHECK(!data(0,4));
+  CHECK(!data(0,5));
+  CHECK(!data(2,0));
+  CHECK(!data(2,1));
+  CHECK(!data(2,2));
+  CHECK(data(2,3));
+  CHECK(!data(2,4));
+  CHECK(!data(2,5));
 }
 
 TEST_CASE("HapsMatrixType: test readSamplesFile", "[HapsMatrixType]") {

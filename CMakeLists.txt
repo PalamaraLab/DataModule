@@ -8,14 +8,14 @@ include(cmake/AutodetectVcpkgToolchainFile.cmake)
 
 project(DataModule LANGUAGES CXX VERSION 0.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Link this 'library' to set the C++ standard / compile-time options requested
 include(cmake/ProjectSettings.cmake)
 add_library(project_settings INTERFACE)
-target_compile_features(project_settings INTERFACE cxx_std_20)
+target_compile_features(project_settings INTERFACE cxx_std_17)
 
 # Link this 'library' to use the warnings specified in CompilerWarnings.cmake
 add_library(project_warnings INTERFACE)

@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include <fmt/core.h>
+#include <fmt/ostream.h>
+
 namespace asmc {
 
 TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") {
@@ -70,6 +73,14 @@ TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") 
   CHECK(data(2,3));
   CHECK(!data(2,4));
   CHECK(!data(2,5));
+
+  Eigen::Matrix<bool, 1, 6> row1;
+  row1 << false, false, false, false, false, false;
+  CHECK(row1 == hapsMatrix.getSite(1));
+
+  Eigen::Matrix<bool, 4, 1> col3;
+  col3 << false, false, true, false;
+  CHECK(col3 == hapsMatrix.getHap(3));
 }
 
 TEST_CASE("HapsMatrixType: test readSamplesFile", "[HapsMatrixType]") {

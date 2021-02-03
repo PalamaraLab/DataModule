@@ -104,6 +104,22 @@ public:
    * @return the vector of raw boolean data, contained in the .hap[s][.gz] file
    */
   [[nodiscard]] const mat_bool_t& getData() const;
+
+  /**
+   * Get all haplotype data for a single site. This is a row from the data matrix and will be a boolean row vector of
+   * length 2N where N is the number of individuals.
+   * @param siteId the id of the site
+   * @return the ith row of the data matrix, where i is siteId.
+   */
+  [[nodiscard]] rvec_bool_t getSite(unsigned long siteId) const;
+
+  /**
+   * Get all site data for a single haplotype. This is a column from the data matrix and will be a boolean column vector
+   * of length N where N is the number of sites.
+   * @param hapId the id of the haplotype
+   * @return the jth row of the data matrix, where j is hapId.
+   */
+  [[nodiscard]] cvec_bool_t getHap(unsigned long hapId) const;
 };
 
 } // namespace asmc

@@ -150,8 +150,19 @@ const std::vector<unsigned long>& HapsMatrixType::getPhysicalPositions() const {
 const std::vector<double>& HapsMatrixType::getGeneticPositions() const {
   return mGeneticPositions;
 }
+
 const mat_bool_t& HapsMatrixType::getData() const {
   return mData;
+}
+
+rvec_bool_t HapsMatrixType::getSite(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return mData.row(static_cast<index_t>(siteId));
+}
+
+cvec_bool_t HapsMatrixType::getHap(unsigned long hapId) const {
+  assert(hapId < 2ul * getNumIndividuals());
+  return mData.col(static_cast<index_t>(hapId));
 }
 
 } // namespace asmc

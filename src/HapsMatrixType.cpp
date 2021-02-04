@@ -107,32 +107,53 @@ void HapsMatrixType::readMapFile(const fs::path& mapFile) {
 }
 
 void HapsMatrixType::validateHapsFile(const fs::path& hapsFile) {
-  const unsigned long expectedNumCols = 2ul * mNumIndividuals + 5ul;
 
   auto gzFile = gzopen(hapsFile.string().c_str(), "r");
-  std::vector<std::string> firstLine = splitTextByDelimiter(readNextLineFromGzip(gzFile), " ");
+  unsigned long linesInFile = 0ul;
 
-  if (firstLine.size() != expectedNumCols) {
-    gzclose(gzFile);
-    throw std::runtime_error(
-        fmt::format("Expected rows of .hap[s][.gz] file {} to contain 2x{}+5={} entries, but first row had {}",
-                    hapsFile.string(), mNumIndividuals, expectedNumCols, firstLine.size()));
+  // Get as many lines as we expect are valid, and check that they are valid
+  for (unsigned long siteId = 0; siteId < getNumSites(); ++siteId) {
+    try {
+      validateHapsRow(splitTextByDelimiter(readNextLineFromGzip(gzFile), " "));
+    } catch (const std::runtime_error& e) {
+      gzclose(gzFile);
+      throw std::runtime_error(fmt::format("Error on line {} of {}:\n{}", 1ul + siteId, hapsFile.string(), e.what()));
+    }
+    linesInFile++;
   }
 
-  unsigned long numRows = 1ul;
+  // Check for any extra lines, other than a possible expected newline at the end of the file
   while (!gzeof(gzFile)) {
     if (!readNextLineFromGzip(gzFile).empty()) {
-      numRows++;
+      linesInFile++;
     }
   }
 
-  if (numRows != getNumSites()) {
+  // Error if there are the wrong number of lines
+  if (linesInFile != getNumSites()) {
     gzclose(gzFile);
-    throw std::runtime_error(fmt::format("Expected .hap[s][.gz] file {} to contain {} rows, but found {}",
-                                         hapsFile.string(), getNumSites(), numRows));
+    throw std::runtime_error(
+        fmt::format("Expected {} to contain {} lines, but found {}", hapsFile.string(), getNumSites(), linesInFile));
   }
 
   gzclose(gzFile);
+}
+
+void HapsMatrixType::validateHapsRow(const std::vector<std::string>& row) const {
+
+  // Check that the row contains the correct number of elements
+  const unsigned long expectedNumCols = 2ul * mNumIndividuals + 5ul;
+  if (row.size() != expectedNumCols) {
+    throw std::runtime_error(fmt::format("Expected row to contain to contain 2x{}+5={} entries, but found {}",
+                                         mNumIndividuals, expectedNumCols, row.size()));
+  }
+
+  // Check that the 2N boolean values are either 0 or 1
+  for (unsigned long col = 5; col < expectedNumCols; ++col) {
+    if (!(row[col] == "0" || row[col] == "1"))
+      throw std::runtime_error(
+          fmt::format("Expected row to contain to boolean data, but column {} was \"{}\"", 1ul + col, row[col]));
+  }
 }
 
 unsigned long HapsMatrixType::getNumIndividuals() const {

@@ -59,8 +59,8 @@ TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") 
   }
 
   const auto& data = hapsMatrix.getData();
-  CHECK(data.rows() == 4l);
-  CHECK(data.cols() == 6l);
+  CHECK(data.rows() == static_cast<index_t>(4l));
+  CHECK(data.cols() == static_cast<index_t>(6l));
   CHECK(data(0,0));
   CHECK(!data(0,1));
   CHECK(!data(0,2));
@@ -96,6 +96,34 @@ TEST_CASE("HapsMatrixType: test readSamplesFile", "[HapsMatrixType]") {
 
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, badSamples2, goodMapFile),
                     Catch::StartsWith("Expected second row of .samples file "));
+}
+
+TEST_CASE("HapsMatrixType: test readHapsFile", "[HapsMatrixType]") {
+
+  std::string hapsTooFewRows = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/too_few_rows.hap";
+  std::string hapsTooManyRows = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/too_many_rows.hap";
+  std::string hapsNotBoolean = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/not_boolean.hap";
+
+  std::string goodMapFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/test.map";
+  std::string goodSamplesFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/test.samples";
+
+  CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(hapsTooFewRows, goodSamplesFile, goodMapFile),
+                    Catch::StartsWith("Error on line 3 of"));
+  CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(hapsTooManyRows, goodSamplesFile, goodMapFile),
+                    Catch::Contains("to contain 4 lines, but found 5"));
+  CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(hapsNotBoolean, goodSamplesFile, goodMapFile),
+                    Catch::Contains("but column 9 was \"invalid\""));
+}
+
+TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
+
+  std::string hapsFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/real_example.haps.gz";
+  std::string samplesFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/real_example.sample.gz";
+  std::string mapFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/real_example.map.gz";
+
+  auto hapsMatrix = HapsMatrixType::createFromHapsPlusSamples(hapsFile, samplesFile, mapFile);
+  CHECK(hapsMatrix.getData().rows() == static_cast<index_t>(102l));
+  CHECK(hapsMatrix.getData().cols() == static_cast<index_t>(100l));
 }
 
 } // namespace asmc

@@ -56,11 +56,20 @@ private:
 
   /**
    * Validate the haps file by checking:
-   *  1. the first row contains 5 + 2N columns
-   *  2. the number of rows is equal to the number of sites, determined from the .map file
+   *  1. every row contains 5 + 2N columns, where N is the number of individuals
+   *  2. every row contains only boolean values in the haps columns
+   *  3. the number of rows is equal to the number of sites, determined from the .map file
    * @param hapsFile path to the .hap[s][.gz] file
    */
   void validateHapsFile(const fs::path& hapsFile);
+
+  /**
+   * Validate an individual row from the .hap[s][.gz] file:
+   *  1. it contains exactly 5 + 2N columns, where N is the number of individuals
+   *  2. it contains only boolean values in the haps columns
+   * @param row the row read from the .hap[s][.gz] file
+   */
+  void validateHapsRow(const std::vector<std::string>& row) const;
 
   /**
    * Default constructor.

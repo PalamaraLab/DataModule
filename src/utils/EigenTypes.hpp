@@ -4,6 +4,9 @@
 #ifndef DATA_MODULE_EIGENTYPES_HPP
 #define DATA_MODULE_EIGENTYPES_HPP
 
+// Silence warnings related to Eigen on Windows (C4996)
+#define _SILENCE_CXX17_ADAPTOR_TYPEDEFS_DEPRECATION_WARNING
+
 #include <Eigen/Core>
 
 namespace asmc {

@@ -130,6 +130,7 @@ setup(
             'flake8',
             'jupyter',
             'nbconvert',
+            'ninja',
             'pytest',
         ],
     },

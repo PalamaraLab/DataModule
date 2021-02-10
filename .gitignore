@@ -40,3 +40,6 @@ build
 # IDE generated directories
 .idea/*
 cmake-build*
+
+# Python virtual environments
+venv

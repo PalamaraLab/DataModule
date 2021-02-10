@@ -60,6 +60,7 @@ class CMakeBuild(build_ext):
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",
+            f"-DWARNINGS_AS_ERRORS=OFF",
         ]
         build_args = []
 
@@ -124,13 +125,14 @@ setup(
     ext_modules=[CMakeExtension("asmc_data_module")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
-    install_requires=[],
+    install_requires=[
+        'ninja',
+        'jupyter',
+    ],
     extras_require={
         'dev': [
             'flake8',
-            'jupyter',
             'nbconvert',
-            'ninja',
             'pytest',
         ],
     },

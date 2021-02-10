@@ -1,6 +1,7 @@
 # Based on https://github.com/pybind/cmake_example
 
 import os
+import platform
 import sys
 import subprocess
 
@@ -28,8 +29,24 @@ class CMakeExtension(Extension):
 class CMakeBuild(build_ext):
 
     def install_deps(self, ext):
+
+        deps = open(os.path.join(ext.sourcedir, 'scripts', 'vcpkg_dependencies'), 'r').read().split(' ')
+
+        if platform.system().lower() == "windows":
+            vcpkg_exe = os.path.join(ext.sourcedir, 'vcpkg', 'vcpkg.exe')
+        else:
+            vcpkg_exe = os.path.join(ext.sourcedir, 'vcpkg', 'vcpkg')
+
+        # If dependencies are already installed, then don't install them again
+        if os.path.isfile(vcpkg_exe):
+            out = subprocess.check_output([vcpkg_exe, 'list'], encoding='UTF-8')
+
+            if all([f'{dep.strip()}:' in out for dep in deps]):
+                return
+
+        # Otherwise, install the dependencies as normal
         install_script_dir = os.path.join(ext.sourcedir, 'scripts')
-        if self.compiler.compiler_type == "msvc":
+        if platform.system().lower() == "windows":
             subprocess.check_call(
                 [os.path.join(install_script_dir, 'install_dependencies.bat')]
             )
@@ -61,6 +78,8 @@ class CMakeBuild(build_ext):
             f"-DPYTHON_EXECUTABLE={sys.executable}",
             f"-DCMAKE_BUILD_TYPE={cfg}",
             f"-DWARNINGS_AS_ERRORS=OFF",
+            f"-DENABLE_TESTING=OFF",
+            f"-DMAKE_DOCS=OFF",
         ]
         build_args = []
 

@@ -1,4 +1,4 @@
-name: Python 3.6 3.9 Windows, macOS, Linux
+name: Python 3.6-3.9 on Linux
 
 on:
   push:
@@ -12,18 +12,30 @@ jobs:
 
   build-and-test:
     name: Install Python bindings
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.6, 3.9]
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        python-version: [ 3.6, 3.7, 3.8, 3.9 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout repo & submodules
+        uses: actions/checkout@v2
         with:
-          submodules: recursive
+          submodules: true
+
+      - name: cache vcpkg installed packages
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: vcpkg/installed
+          key: ${{ runner.os }}-${{ hashFiles('scripts/vcpkg_dependencies', 'vcpkg/CHANGELOG.md') }}
+
+      - name: install dependencies
+        run: |
+          bash scripts/install_dependencies.sh
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -35,6 +47,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install .[dev]
+        env:
+          CXX: g++-9
 
       - name: python unit tests
         run: |

@@ -2,6 +2,8 @@
 [![Unit tests: Ubuntu](https://github.com/PalamaraLab/DataModule/workflows/Unit%20tests:%20Ubuntu/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 [![Unit tests: macOS](https://github.com/PalamaraLab/DataModule/workflows/Unit%20tests:%20macOS/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 
+[![Python 3.6-3.9 on Linux](https://github.com/PalamaraLab/DataModule/workflows/Python%203.6-3.9%20on%20Linux/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
+
 [![Static analysis checks](https://github.com/PalamaraLab/DataModule/workflows/Static%20analysis%20checks/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 [![Sanitiser checks](https://github.com/PalamaraLab/DataModule/workflows/Sanitiser%20checks/badge.svg)](https://github.com/PalamaraLab/DataModule/actions)
 
@@ -17,20 +19,27 @@ Methods that underpin interacting with genome data.
 
 ## Quickstart
 
+This project is a C++ library with optional Python bindings.
+The Python bindings provide a Python module called `asmc_data_module`.
+
 ### Obtaining the source code
 
-Get the source, together with the [vcpkg](https://github.com/microsoft/vcpkg) submodule for installing dependencies:
+Get the source, together with the [vcpkg](https://github.com/microsoft/vcpkg) submodule (for installing dependencies) and the [pybind11](https://github.com/pybind/pybind11) submodule (for Python bindings):
 
 ```bash
 git clone --recurse-submodules https://github.com/PalamaraLab/DataModule.git
 cd DataModule
 ```
 
-### Installing the Python module
-
-Python module coming soon.
-
 ### Installing dependencies
+
+The C++ code requires the following dependencies:
+
+- [eigen3](https://eigen.tuxfamily.org/index.php) (linear algebra)
+- [{fmt}](https://github.com/fmtlib/fmt) (text formatting) 
+- [range-v3](https://github.com/ericniebler/range-v3) (pre C++20 ranges support)
+- [zlib](https://zlib.net/) (compression)
+
 
 The recommended way to install dependencies is to use the provided scripts, which use the [vcpkg](https://github.com/microsoft/vcpkg) submodule.
 
@@ -46,7 +55,17 @@ On **Windows**, run
 scripts\install_dependencies.bat
 ```
 
-### Configuring and compiling the project
+### Installing the Python module
+
+If you want to use this project as a Python module, you only need to run:
+
+```bash
+pip install .
+```
+
+This will work even if you have not installed the dependencies, but if you are a developer who may be installing the Python bindings multiple times, you should install the dependencies once, first, for efficiency.
+
+### Configuring and compiling the C++ project
 
 This project uses [CMake](https://cmake.org/).
 

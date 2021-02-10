@@ -20,7 +20,7 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: checkout repo & vcpkg submodule
+      - name: checkout repo & submodules
         uses: actions/checkout@v2
         with:
           submodules: true
@@ -51,3 +51,18 @@ jobs:
       - name: cmake test
         run: ctest -j2 --output-on-failure
         working-directory: build_dir
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: x64
+
+      - name: install python bindings
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install .[dev]
+
+      - name: python unit tests
+        run: |
+          pytest test/python

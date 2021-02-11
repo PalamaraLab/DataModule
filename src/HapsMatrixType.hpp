@@ -22,7 +22,6 @@ namespace fs = std::filesystem;
 class HapsMatrixType {
 
 private:
-
   /** The number of individuals */
   unsigned long mNumIndividuals = 0ul;
 
@@ -33,7 +32,7 @@ private:
   std::vector<double> mGeneticPositions;
 
   /** The #sites x #haps matrix of booleans, where #haps is 2x #individuals */
-  mat_bool_t mData;
+  mat_uint8_t mData;
 
   /**
    * Read data out of the .sample[s] file, which contains metadata about each individual.
@@ -53,6 +52,12 @@ private:
    * @param mapFile path to the .map file
    */
   void readMapFile(const fs::path& mapFile);
+
+  /**
+   * Read data from the .bed file.
+   * @param bedFile path to the .bed file
+   */
+  void readBedFile(const fs::path& bedFile);
 
   /**
    * Validate the haps file by checking:
@@ -77,7 +82,6 @@ private:
   HapsMatrixType() = default;
 
 public:
-
   /**
    * Create a HapsMatrixType from a .hap[s][.gz], a .sample[s] file, and a .map file.
    *
@@ -88,6 +92,17 @@ public:
    */
   static HapsMatrixType createFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
                                                   std::string_view mapFile);
+
+  /**
+   * Create a HapsMatrixType from a .hap[s][.gz], a .sample[s] file, and a .map file.
+   *
+   * @param hapsFile path to the .bed file
+   * @param samplesFile path to the .bim file
+   * @param mapFile path to the .fam file
+   * @return instance of a HapsMatrixType
+   */
+  static HapsMatrixType createFromBedBimFam(std::string_view bedFile, std::string_view bimFile,
+                                            std::string_view famFile);
 
   /**
    * @return the number of individuals, determined from the .sample[s] file
@@ -112,7 +127,7 @@ public:
   /**
    * @return the vector of raw boolean data, contained in the .hap[s][.gz] file
    */
-  [[nodiscard]] const mat_bool_t& getData() const;
+  [[nodiscard]] const mat_uint8_t& getData() const;
 
   /**
    * Get all haplotype data for a single site. This is a row from the data matrix and will be a boolean row vector of
@@ -120,7 +135,7 @@ public:
    * @param siteId the id of the site
    * @return the ith row of the data matrix, where i is siteId.
    */
-  [[nodiscard]] rvec_bool_t getSite(unsigned long siteId) const;
+  [[nodiscard]] rvec_uint8_t getSite(unsigned long siteId) const;
 
   /**
    * Get all site data for a single haplotype. This is a column from the data matrix and will be a boolean column vector
@@ -128,7 +143,7 @@ public:
    * @param hapId the id of the haplotype
    * @return the jth row of the data matrix, where j is hapId.
    */
-  [[nodiscard]] cvec_bool_t getHap(unsigned long hapId) const;
+  [[nodiscard]] cvec_uint8_t getHap(unsigned long hapId) const;
 };
 
 } // namespace asmc

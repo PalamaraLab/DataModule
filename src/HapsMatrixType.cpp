@@ -2,6 +2,12 @@
 // See accompanying LICENSE and COPYING for copyright notice and full details.
 
 #include "HapsMatrixType.hpp"
+
+extern "C" {
+#include "third_party/pandas_plink/bed_reader.h"
+}
+
+
 #include "utils/FileUtils.hpp"
 #include "utils/StringUtils.hpp"
 
@@ -12,6 +18,8 @@
 #include <vector>
 
 #include <fmt/core.h>
+#include <fmt/ranges.h>
+#include <iostream>
 
 namespace asmc {
 
@@ -33,6 +41,24 @@ HapsMatrixType HapsMatrixType::createFromHapsPlusSamples(std::string_view hapsFi
   instance.readSamplesFile(samplesFile);
   instance.readMapFile(mapFile);
   instance.readHapsFile(hapsFile);
+
+  return instance;
+}
+
+HapsMatrixType HapsMatrixType::createFromBedBimFam(std::string_view bedFile, std::string_view bimFile,
+                                                   std::string_view famFile) {
+  if (!fs::exists(bedFile) || !fs::is_regular_file(bedFile)) {
+    throw std::runtime_error(fmt::format("Expected .bed file, but got {}", bedFile));
+  }
+  if (!fs::exists(bimFile) || !fs::is_regular_file(bimFile)) {
+    throw std::runtime_error(fmt::format("Expected .bim file, but got {}", bimFile));
+  }
+  if (!fs::exists(famFile) || !fs::is_regular_file(famFile)) {
+    throw std::runtime_error(fmt::format("Expected .fam file, but got {}", famFile));
+  }
+
+  HapsMatrixType instance;
+  instance.readBedFile(bedFile);
 
   return instance;
 }
@@ -106,6 +132,18 @@ void HapsMatrixType::readMapFile(const fs::path& mapFile) {
   gzclose(gzFile);
 }
 
+void HapsMatrixType::readBedFile(const fs::path& bedFile) {
+
+  mData.resize(static_cast<index_t>(10), static_cast<index_t>(200));
+
+  std::array<uint64_t, 2> strides = {static_cast<uint64_t>(mData.rowStride()), static_cast<uint64_t>(mData.colStride())};
+
+  read_bed_chunk(bedFile.string().data(),1980837, 200, 0, 0, 10, 200 , mData.data(), strides.data());
+
+  std::cout << fmt::format("{}\n", strides) << mData.cast<int>() << '\n';
+
+}
+
 void HapsMatrixType::validateHapsFile(const fs::path& hapsFile) {
 
   auto gzFile = gzopen(hapsFile.string().c_str(), "r");
@@ -172,16 +210,16 @@ const std::vector<double>& HapsMatrixType::getGeneticPositions() const {
   return mGeneticPositions;
 }
 
-const mat_bool_t& HapsMatrixType::getData() const {
+const mat_uint8_t& HapsMatrixType::getData() const {
   return mData;
 }
 
-rvec_bool_t HapsMatrixType::getSite(unsigned long siteId) const {
+rvec_uint8_t HapsMatrixType::getSite(unsigned long siteId) const {
   assert(siteId < getNumSites());
   return mData.row(static_cast<index_t>(siteId));
 }
 
-cvec_bool_t HapsMatrixType::getHap(unsigned long hapId) const {
+cvec_uint8_t HapsMatrixType::getHap(unsigned long hapId) const {
   assert(hapId < 2ul * getNumIndividuals());
   return mData.col(static_cast<index_t>(hapId));
 }

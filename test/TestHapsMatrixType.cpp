@@ -5,6 +5,7 @@
 
 #include <catch2/catch.hpp>
 
+#include <cstdint>
 #include <string>
 
 #include <fmt/core.h>
@@ -74,12 +75,12 @@ TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") 
   CHECK(!data(2,4));
   CHECK(!data(2,5));
 
-  Eigen::Matrix<bool, 1, 6> row1;
-  row1 << false, false, false, false, false, false;
+  Eigen::Matrix<uint8_t, 1, 6> row1;
+  row1 << 0, 0, 0, 0, 0, 0;
   CHECK(row1 == hapsMatrix.getSite(1));
 
-  Eigen::Matrix<bool, 4, 1> col3;
-  col3 << false, false, true, false;
+  Eigen::Matrix<uint8_t, 4, 1> col3;
+  col3 << 0, 0, 1, 0;
   CHECK(col3 == hapsMatrix.getHap(3));
 }
 
@@ -124,6 +125,16 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
   auto hapsMatrix = HapsMatrixType::createFromHapsPlusSamples(hapsFile, samplesFile, mapFile);
   CHECK(hapsMatrix.getData().rows() == static_cast<index_t>(102l));
   CHECK(hapsMatrix.getData().cols() == static_cast<index_t>(100l));
+}
+
+TEST_CASE("HapsMatrixType: test bed read", "[HapsMatrixType]") {
+
+  std::string bedFile = "/home/fergus/GitRepos/PalamaraLab/plink/data/bedbimfam/chr.merge.bed";
+  std::string bimFile = "/home/fergus/GitRepos/PalamaraLab/plink/data/bedbimfam/chr.merge.bim";
+  std::string famFile = "/home/fergus/GitRepos/PalamaraLab/plink/data/bedbimfam/chr.merge.fam";
+
+  auto hapsMatrix = HapsMatrixType::createFromBedBimFam(bedFile, bimFile, famFile);
+//  fmt::print("{}", hapsMatrix.getData());
 }
 
 } // namespace asmc

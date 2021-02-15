@@ -19,7 +19,7 @@ namespace fs = std::filesystem;
 /**
  * A class that stores information in a #sites x #haps matrix of booleans.
  */
-class HapsMatrixType {
+class BedMatrixType {
 
 private:
   /** The number of individuals */
@@ -35,57 +35,28 @@ private:
   mat_uint8_t mData;
 
   /**
-   * Read data out of the .sample[s] file, which contains metadata about each individual.
-   * @param samplesFile path to the .sample[s] file
+   * Read data from the .bed file.
+   * @param bedFile path to the .bed file
    */
-  void readSamplesFile(const fs::path& samplesFile);
-
-  /**
-   * Read data out of the .hap[s][.gz] file, which contains #sites rows, and 5 + 2 * #individuals columns. The first 5
-   * columns contain metadata, followed by two columns of boolean values per individual.
-   * @param hapsFile path to the .hap[s][.gz] file
-   */
-  void readHapsFile(const fs::path& hapsFile);
-
-  /**
-   * Read data from the .map file, which contains genetic and physical positions for each site.
-   * @param mapFile path to the .map file
-   */
-  void readMapFile(const fs::path& mapFile);
-
-  /**
-   * Validate the haps file by checking:
-   *  1. every row contains 5 + 2N columns, where N is the number of individuals
-   *  2. every row contains only boolean values in the haps columns
-   *  3. the number of rows is equal to the number of sites, determined from the .map file
-   * @param hapsFile path to the .hap[s][.gz] file
-   */
-  void validateHapsFile(const fs::path& hapsFile);
-
-  /**
-   * Validate an individual row from the .hap[s][.gz] file:
-   *  1. it contains exactly 5 + 2N columns, where N is the number of individuals
-   *  2. it contains only boolean values in the haps columns
-   * @param row the row read from the .hap[s][.gz] file
-   */
-  void validateHapsRow(const std::vector<std::string>& row) const;
+  void readBedFile(const fs::path& bedFile);
 
   /**
    * Default constructor.
    */
-  HapsMatrixType() = default;
+  BedMatrixType() = default;
 
 public:
+
   /**
-   * Create a HapsMatrixType from a .hap[s][.gz], a .sample[s] file, and a .map file.
+   * Create a BedMatrixType from a .bed, a .bim file, and a .fam file.
    *
-   * @param hapsFile path to the .hap[s][.gz] file
-   * @param samplesFile path to the .sample[s] file
-   * @param mapFile path to the .map file
+   * @param hapsFile path to the .bed file
+   * @param samplesFile path to the .bim file
+   * @param mapFile path to the .fam file
    * @return instance of a HapsMatrixType
    */
-  static HapsMatrixType createFromHapsPlusSamples(std::string_view hapsFile, std::string_view samplesFile,
-                                                  std::string_view mapFile);
+  static BedMatrixType createFromBedBimFam(std::string_view bedFile, std::string_view bimFile,
+                                            std::string_view famFile);
 
   /**
    * @return the number of individuals, determined from the .sample[s] file

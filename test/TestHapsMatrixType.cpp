@@ -127,14 +127,4 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
   CHECK(hapsMatrix.getData().cols() == static_cast<index_t>(100l));
 }
 
-TEST_CASE("HapsMatrixType: test bed read", "[HapsMatrixType]") {
-
-  std::string bedFile = "/home/fergus/GitRepos/PalamaraLab/plink/data/bedbimfam/chr.merge.bed";
-  std::string bimFile = "/home/fergus/GitRepos/PalamaraLab/plink/data/bedbimfam/chr.merge.bim";
-  std::string famFile = "/home/fergus/GitRepos/PalamaraLab/plink/data/bedbimfam/chr.merge.fam";
-
-  auto hapsMatrix = HapsMatrixType::createFromBedBimFam(bedFile, bimFile, famFile);
-//  fmt::print("{}", hapsMatrix.getData());
-}
-
 } // namespace asmc

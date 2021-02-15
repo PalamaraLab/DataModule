@@ -27,6 +27,18 @@ using mat_uint8_t = Eigen::Matrix<uint8_t, Eigen::Dynamic, Eigen::Dynamic>;
 using rvec_uint8_t = Eigen::Matrix<uint8_t, 1, Eigen::Dynamic>;
 using cvec_uint8_t = Eigen::Matrix<uint8_t, Eigen::Dynamic, 1>;
 
+using mat_float_t = Eigen::Matrix<float, Eigen::Dynamic, Eigen::Dynamic>;
+using rvec_float_t = Eigen::Matrix<float, 1, Eigen::Dynamic>;
+using cvec_float_t = Eigen::Matrix<float, Eigen::Dynamic, 1>;
+
+using mat_dbl_t = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>;
+using rvec_dbl_t = Eigen::Matrix<double, 1, Eigen::Dynamic>;
+using cvec_dbl_t = Eigen::Matrix<double, Eigen::Dynamic, 1>;
+
+using mat_ul_t = Eigen::Matrix<unsigned long, Eigen::Dynamic, Eigen::Dynamic>;
+using rvec_ul_t = Eigen::Matrix<unsigned long, 1, Eigen::Dynamic>;
+using cvec_ul_t = Eigen::Matrix<unsigned long, Eigen::Dynamic, 1>;
+
 } // namespace asmc
 
 #endif // DATA_MODULE_EIGENTYPES_HPP

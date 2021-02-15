@@ -25,6 +25,9 @@ private:
   /** The number of individuals */
   unsigned long mNumIndividuals = 0ul;
 
+  /** The names of each site */
+  std::vector<std::string> mSiteNames;
+
   /** The physical positions of each site */
   std::vector<unsigned long> mPhysicalPositions;
 
@@ -39,6 +42,18 @@ private:
    * @param bedFile path to the .bed file
    */
   void readBedFile(const fs::path& bedFile);
+
+  /**
+   * Read data from the .bim file.
+   * @param bimFile path to the .bim file
+   */
+  void readBimFile(const fs::path& bimFile);
+
+  /**
+   * Read data from the .fam file.
+   * @param famFile path to the .fam file
+   */
+  void readFamFile(const fs::path& famFile);
 
   /**
    * Default constructor.
@@ -69,14 +84,19 @@ public:
   [[nodiscard]] unsigned long getNumSites() const;
 
   /**
-   * @return a vector of physical positions, read in from the .map file
+   * @return a vector of physical positions, read in from the .bim file
    */
   [[nodiscard]] const std::vector<unsigned long>& getPhysicalPositions() const;
 
   /**
-   * @return a vector of genetic positions, in centimorgans, read in from the .map file
+   * @return a vector of genetic positions, in centimorgans, read in from the .bim file
    */
   [[nodiscard]] const std::vector<double>& getGeneticPositions() const;
+
+  /**
+   * @return a vector of variant names, read in from the .bim file
+   */
+  [[nodiscard]] const std::vector<std::string>& getSiteNames() const;
 
   /**
    * @return the vector of raw boolean data, contained in the .hap[s][.gz] file
@@ -84,20 +104,34 @@ public:
   [[nodiscard]] const mat_uint8_t& getData() const;
 
   /**
-   * Get all haplotype data for a single site. This is a row from the data matrix and will be a boolean row vector of
-   * length 2N where N is the number of individuals.
-   * @param siteId the id of the site
-   * @return the ith row of the data matrix, where i is siteId.
+   * Get all variant data for a single individual.
+   *
+   * @param individualId the id of the individual
+   * @return the ith row of the data matrix, where i is individualId.
    */
-  [[nodiscard]] rvec_uint8_t getSite(unsigned long siteId) const;
+  [[nodiscard]] rvec_uint8_t getIndividual(unsigned long individualId) const;
 
   /**
-   * Get all site data for a single haplotype. This is a column from the data matrix and will be a boolean column vector
-   * of length N where N is the number of sites.
-   * @param hapId the id of the haplotype
-   * @return the jth row of the data matrix, where j is hapId.
+   * Calculate the site-wise number of missing entries.
+   *
+   * @return a row vector containing count of missing data across all individuals for each site.
    */
-  [[nodiscard]] cvec_uint8_t getHap(unsigned long hapId) const;
+  [[nodiscard]] rvec_ul_t countMissing() const;
+
+  /**
+   * Calculate frequencies.
+   *
+   * @return a row vector containing frequencies across all individuals for each site.
+   */
+  [[nodiscard]] rvec_dbl_t calculateFrequencies() const;
+
+  /**
+   * Get all individual data for a single site.
+   *
+   * @param siteId the id of the site
+   * @return the jth column of the data matrix, where j is siteId.
+   */
+  [[nodiscard]] cvec_uint8_t getSite(unsigned long siteId) const;
 };
 
 } // namespace asmc

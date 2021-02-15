@@ -36,6 +36,8 @@ BedMatrixType BedMatrixType::createFromBedBimFam(std::string_view bedFile, std::
   }
 
   BedMatrixType instance;
+  instance.readBimFile(bimFile);
+  instance.readFamFile(famFile);
   instance.readBedFile(bedFile);
 
   return instance;
@@ -43,11 +45,53 @@ BedMatrixType BedMatrixType::createFromBedBimFam(std::string_view bedFile, std::
 
 void BedMatrixType::readBedFile(const fs::path& bedFile) {
 
-  mData.resize(static_cast<index_t>(10), static_cast<index_t>(200));
-  std::array<uint64_t, 2> strides = {static_cast<uint64_t>(mData.rowStride()),
-                                     static_cast<uint64_t>(mData.colStride())};
+  mData.resize(static_cast<index_t>(getNumIndividuals()), static_cast<index_t>(getNumSites()));
 
-  read_bed_chunk(bedFile.string().data(), 1980837, 200, 0, 0, 10, 200, mData.data(), strides.data());
+  const auto nRows = static_cast<uint64_t>(getNumSites());
+  const auto nCols = static_cast<uint64_t>(getNumIndividuals());
+  const auto rowStart = static_cast<uint64_t>(0ul);
+  const auto colStart = static_cast<uint64_t>(0ul);
+  const auto rowEnd = nRows;
+  const auto colEnd = nCols;
+  std::array<uint64_t, 2> strides = {static_cast<uint64_t>(mData.colStride()),
+                                     static_cast<uint64_t>(mData.rowStride())};
+
+  read_bed_chunk(bedFile.string().data(), nRows, nCols, rowStart, colStart, rowEnd, colEnd, mData.data(),
+                 strides.data());
+}
+
+void BedMatrixType::readBimFile(const fs::path& bimFile) {
+
+  auto gzFile = gzopen(bimFile.string().c_str(), "r");
+
+  while (!gzeof(gzFile)) {
+    std::vector<std::string> line = splitTextByDelimiter(readNextLineFromGzip(gzFile), "\t");
+    if (!line.empty()) {
+      assert(line.size() == 6ul);
+
+      mSiteNames.emplace_back(line.at(1));
+      mGeneticPositions.emplace_back(std::stod(line.at(2)));
+      mPhysicalPositions.emplace_back(std::stoul(line.at(3)));
+    }
+  }
+
+  gzclose(gzFile);
+}
+
+void BedMatrixType::readFamFile(const fs::path& famFile) {
+
+  auto gzFile = gzopen(famFile.string().c_str(), "r");
+
+  unsigned long numIndividuals = 0ul;
+  while (!gzeof(gzFile)) {
+    std::vector<std::string> line = splitTextByDelimiter(readNextLineFromGzip(gzFile), "\t");
+    if (!line.empty()) {
+      assert(line.size() == 6ul);
+      numIndividuals++;
+    }
+  }
+  mNumIndividuals = numIndividuals;
+  gzclose(gzFile);
 }
 
 unsigned long BedMatrixType::getNumIndividuals() const {
@@ -70,14 +114,31 @@ const mat_uint8_t& BedMatrixType::getData() const {
   return mData;
 }
 
-rvec_uint8_t BedMatrixType::getSite(unsigned long siteId) const {
-  assert(siteId < getNumSites());
-  return mData.row(static_cast<index_t>(siteId));
+rvec_uint8_t BedMatrixType::getIndividual(unsigned long individualId) const {
+  assert(individualId < getNumIndividuals());
+  return mData.row(static_cast<index_t>(individualId));
 }
 
-cvec_uint8_t BedMatrixType::getHap(unsigned long hapId) const {
-  assert(hapId < 2ul * getNumIndividuals());
-  return mData.col(static_cast<index_t>(hapId));
+cvec_uint8_t BedMatrixType::getSite(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return mData.col(static_cast<index_t>(siteId));
+}
+
+const std::vector<std::string>& BedMatrixType::getSiteNames() const {
+  return mSiteNames;
+}
+
+rvec_ul_t BedMatrixType::countMissing() const {
+  return (mData.array() == static_cast<uint8_t>(3)).colwise().count().cast<unsigned long>();
+}
+
+rvec_dbl_t BedMatrixType::calculateFrequencies() const {
+
+  rvec_ul_t numMissing = countMissing();
+
+  auto colSums = mData.cast<unsigned long>().colwise().sum() - 3ul * numMissing;
+  auto maxSums = 2ul * (getNumIndividuals() - numMissing.array());
+  return (colSums.cast<float>().array() > 0.5f * maxSums.cast<float>()).select(maxSums - colSums.array(), colSums).cast<double>() / maxSums.cast<double>();
 }
 
 } // namespace asmc

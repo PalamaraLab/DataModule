@@ -1,10 +1,12 @@
 // This file is part of https://github.com/PalamaraLab/DataModule which is released under the GPL-3.0 license.
 // See accompanying LICENSE and COPYING for copyright notice and full details.
 
-#ifndef DATA_MODULE_HAPS_MATRIX_TYPE_HPP
-#define DATA_MODULE_HAPS_MATRIX_TYPE_HPP
+#ifndef DATA_MODULE_BED_MATRIX_TYPE_HPP
+#define DATA_MODULE_BED_MATRIX_TYPE_HPP
 
 #include "utils/EigenTypes.hpp"
+
+#include <chrono>
 
 #include <filesystem>
 #include <string_view>
@@ -22,6 +24,12 @@ namespace fs = std::filesystem;
 class BedMatrixType {
 
 private:
+
+  std::chrono::milliseconds tReadBed = {};
+  std::chrono::milliseconds tReadBim = {};
+  std::chrono::milliseconds tReadFam = {};
+  std::chrono::milliseconds tWriteFrq = {};
+
   /** The number of individuals */
   unsigned long mNumIndividuals = 0ul;
 
@@ -126,14 +134,30 @@ public:
   [[nodiscard]] rvec_dbl_t calculateFrequencies() const;
 
   /**
+   * Write a .frq file containing the frequency data.
+   *
+   * @param frqFile path to the .frq file to write to
+   */
+  void writeFrequencies(std::string_view frqFile);
+
+  /**
    * Get all individual data for a single site.
    *
    * @param siteId the id of the site
    * @return the jth column of the data matrix, where j is siteId.
    */
   [[nodiscard]] cvec_uint8_t getSite(unsigned long siteId) const;
+
+  [[nodiscard]] std::string printTiming() const {
+    fmt::memory_buffer out;
+    fmt::format_to(out, "###\nReading bed:  {:>6} ms\n", tReadBed.count());
+    fmt::format_to(out, "Reading bim:  {:>6} ms\n", tReadBim.count());
+    fmt::format_to(out, "Reading fam:  {:>6} ms\n", tReadFam.count());
+    fmt::format_to(out, "Writing frq:  {:>6} ms\n###\n", tWriteFrq.count());
+    return fmt::to_string(out);
+  }
 };
 
 } // namespace asmc
 
-#endif // DATA_MODULE_HAPS_MATRIX_TYPE_HPP
+#endif // DATA_MODULE_BED_MATRIX_TYPE_HPP

@@ -44,6 +44,7 @@ BedMatrixType BedMatrixType::createFromBedBimFam(std::string_view bedFile, std::
 }
 
 void BedMatrixType::readBedFile(const fs::path& bedFile) {
+  auto t = std::chrono::high_resolution_clock::now();
 
   mData.resize(static_cast<index_t>(getNumIndividuals()), static_cast<index_t>(getNumSites()));
 
@@ -58,9 +59,11 @@ void BedMatrixType::readBedFile(const fs::path& bedFile) {
 
   read_bed_chunk(bedFile.string().data(), nRows, nCols, rowStart, colStart, rowEnd, colEnd, mData.data(),
                  strides.data());
+  tReadBed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 void BedMatrixType::readBimFile(const fs::path& bimFile) {
+  auto t = std::chrono::high_resolution_clock::now();
 
   auto gzFile = gzopen(bimFile.string().c_str(), "r");
 
@@ -76,10 +79,11 @@ void BedMatrixType::readBimFile(const fs::path& bimFile) {
   }
 
   gzclose(gzFile);
+  tReadBim = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 void BedMatrixType::readFamFile(const fs::path& famFile) {
-
+  auto t = std::chrono::high_resolution_clock::now();
   auto gzFile = gzopen(famFile.string().c_str(), "r");
 
   unsigned long numIndividuals = 0ul;
@@ -92,6 +96,7 @@ void BedMatrixType::readFamFile(const fs::path& famFile) {
   }
   mNumIndividuals = numIndividuals;
   gzclose(gzFile);
+  tReadFam = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 unsigned long BedMatrixType::getNumIndividuals() const {
@@ -139,6 +144,25 @@ rvec_dbl_t BedMatrixType::calculateFrequencies() const {
   auto colSums = mData.cast<unsigned long>().colwise().sum() - 3ul * numMissing;
   auto maxSums = 2ul * (getNumIndividuals() - numMissing.array());
   return (colSums.cast<float>().array() > 0.5f * maxSums.cast<float>()).select(maxSums - colSums.array(), colSums).cast<double>() / maxSums.cast<double>();
+}
+
+void BedMatrixType::writeFrequencies(std::string_view frqFile) {
+
+  auto freq = calculateFrequencies();
+  rvec_ul_t NCHROBS = 2ul * (getNumIndividuals() - countMissing().array());
+  auto t = std::chrono::high_resolution_clock::now();
+
+  FILE* fp = std::fopen(frqFile.data(), "w");
+  fmt::print(fp, " CHR           SNP   A1   A2          MAF  NCHROBS\n", freq[0], NCHROBS[0]);
+
+
+  for (unsigned long i = 0ul; i < getNumSites(); ++i) {
+    auto ii = static_cast<index_t>(i);
+    fmt::print(fp, "{:>4}{:>14}{:>5}{:>5}{:>13}{:>9}\n", 1, mSiteNames.at(i), 1, 2, freq[ii], NCHROBS[ii]);
+  }
+
+  std::fclose(fp);
+  tWriteFrq = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 } // namespace asmc

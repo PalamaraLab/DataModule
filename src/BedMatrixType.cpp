@@ -13,6 +13,7 @@ extern "C" {
 
 #include <array>
 #include <cassert>
+#include <cstdint>
 #include <exception>
 #include <filesystem>
 #include <string_view>

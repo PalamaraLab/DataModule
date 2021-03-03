@@ -11,6 +11,7 @@ extern "C" {
 #include "utils/FileUtils.hpp"
 #include "utils/StringUtils.hpp"
 
+#include <array>
 #include <cassert>
 #include <exception>
 #include <filesystem>

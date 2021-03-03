@@ -9,9 +9,6 @@ message(STATUS "Found Eigen3 ${Eigen3_VERSION}")
 find_package(fmt CONFIG REQUIRED)
 message(STATUS "Found {fmt} ${fmt_VERSION}")
 
-find_package(hdf5 CONFIG REQUIRED)
-message(STATUS "Found hdf5 ${hdf5_VERSION}")
-
 find_package(range-v3 CONFIG REQUIRED)
 message(STATUS "Found range-v3 ${range-v3_VERSION}")
 #target_link_libraries(main PRIVATE range-v3 range-v3-meta range-v3::meta range-v3-concepts)

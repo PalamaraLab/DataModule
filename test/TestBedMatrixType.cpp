@@ -9,8 +9,8 @@
 #include <string>
 
 #include <fmt/core.h>
-#include <fmt/ranges.h>
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
 
 namespace asmc {
 
@@ -23,8 +23,31 @@ TEST_CASE("BedMatrixType: test (small) real example", "[BedMatrixType]") {
 
   auto bedMatrix = BedMatrixType::createFromBedBimFam(bedFile, bimFile, famFile);
 
-  CHECK(bedMatrix.getNumSites() == 100ul);
-  CHECK(bedMatrix.getNumIndividuals() == 50ul);
+  // Test getting basic information
+  {
+    CHECK(bedMatrix.getData().rows() == static_cast<index_t>(50l));
+    CHECK(bedMatrix.getData().cols() == static_cast<index_t>(100l));
+    CHECK(bedMatrix.getNumIndividuals() == 50ul);
+    CHECK(bedMatrix.getNumSites() == 100ul);
+
+    const auto& physicalPositions = bedMatrix.getPhysicalPositions();
+    CHECK(physicalPositions.size() == 100ul);
+    for (unsigned long i = 0ul; i < physicalPositions.size(); ++i) {
+      CHECK(physicalPositions.at(i) == i + 1ul);
+    }
+
+    const auto& geneticPositions = bedMatrix.getGeneticPositions();
+    CHECK(geneticPositions.size() == 100ul);
+    for (auto genPos : geneticPositions) {
+      CHECK(genPos == 0.0);
+    }
+
+    const auto& siteNames = bedMatrix.getSiteNames();
+    CHECK(siteNames.size() == 100ul);
+    CHECK(siteNames.at(67ul) == "null_67");
+  }
+
+  //  auto
 }
 
 } // namespace asmc

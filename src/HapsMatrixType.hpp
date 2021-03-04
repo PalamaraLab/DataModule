@@ -147,6 +147,13 @@ public:
   [[nodiscard]] cvec_uint8_t getHap(unsigned long hapId) const;
 
   /**
+   * Get all site data for a single individual. This is two adjacent columns from the data matrix, returned as a matrix.
+   * @param individualId the id of the individual
+   * @return the jth row of the data matrix, where j is hapId.
+   */
+  [[nodiscard]] mat_uint8_t getIndividual(unsigned long individualId) const;
+
+  /**
    * Get the minor allele count for a given site. This is a number in [0, #haps/2].
    * @param siteId the site ID
    * @return the minor allele count for the given site

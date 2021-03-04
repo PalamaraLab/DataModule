@@ -129,6 +129,19 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
   CHECK(hapsMatrix.getNumIndividuals() == 50ul);
   CHECK(hapsMatrix.getNumHaps() == 100ul);
 
+  // Test getting slices
+  {
+    auto site = hapsMatrix.getSite(3ul);
+    CHECK(site.size() == static_cast<index_t>(100l));
+
+    auto hap = hapsMatrix.getHap(2ul);
+    CHECK(hap.size() == static_cast<index_t>(102l));
+
+    auto ind = hapsMatrix.getIndividual(2ul);
+    CHECK(ind.rows() == static_cast<index_t>(102l));
+    CHECK(ind.cols() == static_cast<index_t>(2l));
+  }
+
   // Test counts
   {
     CHECK(hapsMatrix.getMinorAlleleCount(0ul) == 1ul);

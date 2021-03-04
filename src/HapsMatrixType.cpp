@@ -188,6 +188,17 @@ rvec_uint8_t HapsMatrixType::getSite(unsigned long siteId) const {
   return mData.row(static_cast<index_t>(siteId));
 }
 
+cvec_uint8_t HapsMatrixType::getHap(unsigned long hapId) const {
+  assert(hapId < getNumHaps());
+  return mData.col(static_cast<index_t>(hapId));
+}
+
+mat_uint8_t HapsMatrixType::getIndividual(unsigned long individualId) const {
+  assert(individualId < getNumIndividuals());
+  return mData.block(static_cast<index_t>(0), static_cast<index_t>(2ul * individualId), mData.rows(),
+                     static_cast<index_t>(2ul));
+}
+
 unsigned long HapsMatrixType::getAlleleCount(unsigned long siteId) const {
   assert(siteId < getNumSites());
   return mData.row(static_cast<index_t>(siteId)).cast<unsigned long>().sum();
@@ -235,11 +246,6 @@ cvec_dbl_t HapsMatrixType::getMinorAlleleFrequencies() const {
 
 cvec_dbl_t HapsMatrixType::getDerivedAlleleFrequencies() const {
   return getDerivedAlleleCounts().cast<double>().array() / static_cast<double>(getNumHaps());
-}
-
-cvec_uint8_t HapsMatrixType::getHap(unsigned long hapId) const {
-  assert(hapId < getNumHaps());
-  return mData.col(static_cast<index_t>(hapId));
 }
 
 } // namespace asmc

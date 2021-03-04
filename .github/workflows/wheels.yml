@@ -3,7 +3,10 @@ name: Build wheels
 on:
   push:
     branches:
-      - dev
+      - main
+  pull_request:
+    branches:
+      - main
   release:
     types:
       - published
@@ -47,7 +50,7 @@ jobs:
     name: Upload to PyPI
     needs: build_wheels
     runs-on: ubuntu-latest
-#    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'release' && github.event.action == 'published'
 
     steps:
       - uses: actions/setup-python@v2

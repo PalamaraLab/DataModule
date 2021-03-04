@@ -45,6 +45,22 @@ BedMatrixType BedMatrixType::createFromBedBimFam(std::string_view bedFile, std::
   return instance;
 }
 
+void BedMatrixType::determineFamDelimiter(const fs::path& famFile) {
+  auto gzFile = gzopen(famFile.string().c_str(), "r");
+  auto firstLine = readNextLineFromGzip(gzFile);
+
+  std::vector<std::string> delimiters = {" ", "\t"};
+  for(const auto& delimiter : delimiters) {
+    if(splitTextByDelimiter(firstLine, delimiter).size() == 6ul) {
+      mFamDelimeter = delimiter;
+      gzclose(gzFile);
+      return;
+    }
+  }
+  gzclose(gzFile);
+  throw std::runtime_error(fmt::format("Could not determine delimiter for .fam file {}", famFile.string()));
+}
+
 void BedMatrixType::readBedFile(const fs::path& bedFile) {
   auto t = std::chrono::high_resolution_clock::now();
 
@@ -85,12 +101,13 @@ void BedMatrixType::readBimFile(const fs::path& bimFile) {
 }
 
 void BedMatrixType::readFamFile(const fs::path& famFile) {
+  determineFamDelimiter(famFile);
   auto t = std::chrono::high_resolution_clock::now();
   auto gzFile = gzopen(famFile.string().c_str(), "r");
 
   unsigned long numIndividuals = 0ul;
   while (!gzeof(gzFile)) {
-    std::vector<std::string> line = splitTextByDelimiter(readNextLineFromGzip(gzFile), "\t");
+    std::vector<std::string> line = splitTextByDelimiter(readNextLineFromGzip(gzFile), mFamDelimeter);
     if (!line.empty()) {
       assert(line.size() == 6ul);
       numIndividuals++;

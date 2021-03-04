@@ -45,6 +45,12 @@ private:
   /** The #sites x #haps matrix of booleans, where #haps is 2x #individuals */
   mat_uint8_t mData;
 
+  /** The detected delimeter used in the .fam file */
+  std::string mFamDelimeter = " ";
+
+  /** Determine the appropriate delimiters for the .fam file */
+  void determineFamDelimiter(const fs::path& famFile);
+
   /**
    * Read data from the .bed file.
    * @param bedFile path to the .bed file
@@ -82,12 +88,12 @@ public:
                                             std::string_view famFile);
 
   /**
-   * @return the number of individuals, determined from the .sample[s] file
+   * @return the number of individuals, determined from the .fam file
    */
   [[nodiscard]] unsigned long getNumIndividuals() const;
 
   /**
-   * @return the number of sites, determined from the .map file
+   * @return the number of sites, determined from the .bim file
    */
   [[nodiscard]] unsigned long getNumSites() const;
 

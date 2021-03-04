@@ -13,6 +13,9 @@ jobs:
   build-and-test:
     name: Unit test coverage
     runs-on: ubuntu-20.04
+    env:
+      CC: gcc-10
+      CXX: g++-10
 
     steps:
 
@@ -45,8 +48,6 @@ jobs:
           cmake --build . --parallel 2 --target unit_tests
           ctest -j2 --output-on-failure
         working-directory: build_dir
-        env:
-          CXX: g++-10
 
       - name: upload coverage results
         run: |

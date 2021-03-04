@@ -1,6 +1,8 @@
 # This file is part of https://github.com/PalamaraLab/DataModule which is released under the GPL-3.0 license.
 # See accompanying LICENSE and COPYING for copyright notice and full details.
 
+add_subdirectory(third_party)
+
 find_package(Eigen3 CONFIG REQUIRED)
 message(STATUS "Found Eigen3 ${Eigen3_VERSION}")
 
@@ -16,6 +18,7 @@ message(STATUS "Found zlib ${ZLIB_VERSION_STRING}")
 
 set(
         data_module_src
+        BedMatrixType.cpp
         HapsMatrixType.cpp
         utils/FileUtils.cpp
         utils/StringUtils.cpp
@@ -24,6 +27,7 @@ set(
 set(
         data_module_hdr
         HapsMatrixType.hpp
+        BedMatrixType.hpp
         utils/EigenTypes.hpp
         utils/FileUtils.hpp
         utils/StringUtils.hpp
@@ -33,6 +37,7 @@ add_library(data_module_lib STATIC ${data_module_src} ${data_module_hdr})
 target_include_directories(data_module_lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(data_module_lib PRIVATE Eigen3::Eigen fmt::fmt range-v3 ZLIB::ZLIB)
 target_link_libraries(data_module_lib PRIVATE project_warnings project_settings)
+target_link_libraries(data_module_lib PRIVATE pandas_plink_lib)
 
 if (PYTHON_BINDINGS)
     set_target_properties(data_module_lib PROPERTIES POSITION_INDEPENDENT_CODE TRUE)

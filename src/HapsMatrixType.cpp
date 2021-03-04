@@ -2,6 +2,7 @@
 // See accompanying LICENSE and COPYING for copyright notice and full details.
 
 #include "HapsMatrixType.hpp"
+
 #include "utils/FileUtils.hpp"
 #include "utils/StringUtils.hpp"
 
@@ -12,6 +13,8 @@
 #include <vector>
 
 #include <fmt/core.h>
+#include <fmt/ranges.h>
+#include <iostream>
 
 namespace asmc {
 
@@ -160,6 +163,10 @@ unsigned long HapsMatrixType::getNumIndividuals() const {
   return mNumIndividuals;
 }
 
+unsigned long HapsMatrixType::getNumHaps() const {
+  return 2ul * mNumIndividuals;
+}
+
 unsigned long HapsMatrixType::getNumSites() const {
   return static_cast<unsigned long>(mGeneticPositions.size());
 }
@@ -172,18 +179,73 @@ const std::vector<double>& HapsMatrixType::getGeneticPositions() const {
   return mGeneticPositions;
 }
 
-const mat_bool_t& HapsMatrixType::getData() const {
+const mat_uint8_t& HapsMatrixType::getData() const {
   return mData;
 }
 
-rvec_bool_t HapsMatrixType::getSite(unsigned long siteId) const {
+rvec_uint8_t HapsMatrixType::getSite(unsigned long siteId) const {
   assert(siteId < getNumSites());
   return mData.row(static_cast<index_t>(siteId));
 }
 
-cvec_bool_t HapsMatrixType::getHap(unsigned long hapId) const {
-  assert(hapId < 2ul * getNumIndividuals());
+cvec_uint8_t HapsMatrixType::getHap(unsigned long hapId) const {
+  assert(hapId < getNumHaps());
   return mData.col(static_cast<index_t>(hapId));
+}
+
+mat_uint8_t HapsMatrixType::getIndividual(unsigned long individualId) const {
+  assert(individualId < getNumIndividuals());
+  return mData.block(static_cast<index_t>(0), static_cast<index_t>(2ul * individualId), mData.rows(),
+                     static_cast<index_t>(2ul));
+}
+
+unsigned long HapsMatrixType::getAlleleCount(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return mData.row(static_cast<index_t>(siteId)).cast<unsigned long>().sum();
+}
+
+unsigned long HapsMatrixType::getMinorAlleleCount(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  const unsigned long rawCount = getAlleleCount(siteId);
+  return rawCount <= getNumIndividuals() ? rawCount : getNumHaps() - rawCount;
+}
+
+unsigned long HapsMatrixType::getDerivedAlleleCount(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return getAlleleCount(siteId);
+}
+
+cvec_ul_t HapsMatrixType::getAlleleCounts() const {
+  return mData.cast<unsigned long>().rowwise().sum();
+}
+
+cvec_ul_t HapsMatrixType::getMinorAlleleCounts() const {
+  cvec_ul_t counts = getAlleleCounts();
+  const auto threshold = getNumIndividuals();
+  const auto max = getNumHaps();
+  return (counts.array() > threshold).select(max - counts.array(), counts);
+}
+
+cvec_ul_t HapsMatrixType::getDerivedAlleleCounts() const {
+  return getAlleleCounts();
+}
+
+double HapsMatrixType::getMinorAlleleFrequency(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return static_cast<double>(getMinorAlleleCount(siteId)) / static_cast<double>(getNumHaps());
+}
+
+double HapsMatrixType::getDerivedAlleleFrequency(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return static_cast<double>(getDerivedAlleleCount(siteId)) / static_cast<double>(getNumHaps());
+}
+
+cvec_dbl_t HapsMatrixType::getMinorAlleleFrequencies() const {
+  return getMinorAlleleCounts().cast<double>().array() / static_cast<double>(getNumHaps());
+}
+
+cvec_dbl_t HapsMatrixType::getDerivedAlleleFrequencies() const {
+  return getDerivedAlleleCounts().cast<double>().array() / static_cast<double>(getNumHaps());
 }
 
 } // namespace asmc

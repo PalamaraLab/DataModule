@@ -43,3 +43,8 @@ cmake-build*
 
 # Python virtual environments
 venv
+
+# Python build-related files
+*.egg-info/
+dist
+.ipynb_checkpoints

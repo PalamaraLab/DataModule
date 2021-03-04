@@ -5,6 +5,7 @@
 
 #include <catch2/catch.hpp>
 
+#include <cstdint>
 #include <string>
 
 #include <fmt/core.h>
@@ -74,12 +75,12 @@ TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") 
   CHECK(!data(2,4));
   CHECK(!data(2,5));
 
-  Eigen::Matrix<bool, 1, 6> row1;
-  row1 << false, false, false, false, false, false;
+  Eigen::Matrix<uint8_t, 1, 6> row1;
+  row1 << 0, 0, 0, 0, 0, 0;
   CHECK(row1 == hapsMatrix.getSite(1));
 
-  Eigen::Matrix<bool, 4, 1> col3;
-  col3 << false, false, true, false;
+  Eigen::Matrix<uint8_t, 4, 1> col3;
+  col3 << 0, 0, 1, 0;
   CHECK(col3 == hapsMatrix.getHap(3));
 }
 
@@ -124,6 +125,66 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
   auto hapsMatrix = HapsMatrixType::createFromHapsPlusSamples(hapsFile, samplesFile, mapFile);
   CHECK(hapsMatrix.getData().rows() == static_cast<index_t>(102l));
   CHECK(hapsMatrix.getData().cols() == static_cast<index_t>(100l));
+  CHECK(hapsMatrix.getNumSites() == 102ul);
+  CHECK(hapsMatrix.getNumIndividuals() == 50ul);
+  CHECK(hapsMatrix.getNumHaps() == 100ul);
+
+  // Test getting slices
+  {
+    auto site = hapsMatrix.getSite(3ul);
+    CHECK(site.size() == static_cast<index_t>(100l));
+
+    auto hap = hapsMatrix.getHap(2ul);
+    CHECK(hap.size() == static_cast<index_t>(102l));
+
+    auto ind = hapsMatrix.getIndividual(2ul);
+    CHECK(ind.rows() == static_cast<index_t>(102l));
+    CHECK(ind.cols() == static_cast<index_t>(2l));
+  }
+
+  // Test counts
+  {
+    CHECK(hapsMatrix.getMinorAlleleCount(0ul) == 1ul);
+    CHECK(hapsMatrix.getDerivedAlleleCount(0ul) == 1ul);
+
+    CHECK(hapsMatrix.getMinorAlleleCount(8ul) == 29ul);
+    CHECK(hapsMatrix.getDerivedAlleleCount(8ul) == 71ul);
+
+    cvec_ul_t minorAlleleCounts = hapsMatrix.getMinorAlleleCounts();
+    CHECK(minorAlleleCounts(0) == 1ul);
+    CHECK(minorAlleleCounts(8) == 29ul);
+
+    cvec_ul_t derivedAlleleCounts = hapsMatrix.getDerivedAlleleCounts();
+    CHECK(derivedAlleleCounts(0) == 1ul);
+    CHECK(derivedAlleleCounts(8) == 71ul);
+
+    for (unsigned long i = 0ul; i < hapsMatrix.getNumSites(); ++i) {
+      CHECK(minorAlleleCounts(static_cast<index_t>(i)) == hapsMatrix.getMinorAlleleCount(i));
+      CHECK(derivedAlleleCounts(static_cast<index_t>(i)) == hapsMatrix.getDerivedAlleleCount(i));
+    }
+  }
+
+  // Test frequencies
+  {
+    CHECK(hapsMatrix.getMinorAlleleFrequency(0ul) == Approx(1.0 / 100.0));
+    CHECK(hapsMatrix.getDerivedAlleleFrequency(0ul) == Approx(1.0 / 100.0));
+
+    CHECK(hapsMatrix.getMinorAlleleFrequency(8ul) == Approx(29.0 / 100.0));
+    CHECK(hapsMatrix.getDerivedAlleleFrequency(8ul) == Approx(71.0 / 100.0));
+
+    cvec_dbl_t minorAlleleFrequencies = hapsMatrix.getMinorAlleleFrequencies();
+    CHECK(minorAlleleFrequencies(0) == Approx(1.0 / 100.0));
+    CHECK(minorAlleleFrequencies(8) == Approx(29.0 / 100.0));
+
+    cvec_dbl_t derivedAlleleFrequencies = hapsMatrix.getDerivedAlleleFrequencies();
+    CHECK(derivedAlleleFrequencies(0) == Approx(1.0 / 100.0));
+    CHECK(derivedAlleleFrequencies(8) == Approx(71.0 / 100.0));
+
+    for (unsigned long i = 0ul; i < hapsMatrix.getNumSites(); ++i) {
+      CHECK(minorAlleleFrequencies(static_cast<index_t>(i)) == Approx(hapsMatrix.getMinorAlleleFrequency(i)));
+      CHECK(derivedAlleleFrequencies(static_cast<index_t>(i)) == Approx(hapsMatrix.getDerivedAlleleFrequency(i)));
+    }
+  }
 }
 
 } // namespace asmc

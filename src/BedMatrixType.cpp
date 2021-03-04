@@ -152,6 +152,24 @@ const std::vector<std::string>& BedMatrixType::getSiteNames() const {
   return mSiteNames;
 }
 
+unsigned long BedMatrixType::getMissingCount(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return static_cast<unsigned long>(
+      (mData.col(static_cast<index_t>(siteId)).array() == static_cast<uint8_t>(3)).count());
+}
+
+rvec_ul_t BedMatrixType::getMissingCounts() const {
+  return (mData.array() == static_cast<uint8_t>(3)).colwise().count().cast<unsigned long>();
+}
+
+double BedMatrixType::getMissingFrequency(unsigned long siteId) const {
+  return static_cast<double>(getMissingCount(siteId)) / static_cast<double>(getNumIndividuals());
+}
+
+rvec_dbl_t BedMatrixType::getMissingFrequencies() const {
+  return getMissingCounts().cast<double>().array() / static_cast<double>(getNumIndividuals());
+}
+
 rvec_ul_t BedMatrixType::countMissing() const {
   return (mData.array() == static_cast<uint8_t>(3)).colwise().count().cast<unsigned long>();
 }

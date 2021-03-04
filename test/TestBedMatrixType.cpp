@@ -47,6 +47,49 @@ TEST_CASE("BedMatrixType: test (small) real example", "[BedMatrixType]") {
     CHECK(siteNames.at(67ul) == "null_67");
   }
 
+  // Test getting slices
+  {
+    cvec_ul_t site = bedMatrix.getSite(0ul).cast<unsigned long>();
+    CHECK(site.size() == static_cast<index_t>(50l));
+    CHECK(site(0) == 2ul);
+    CHECK(site(41) == 3ul);
+    CHECK(site(42) == 2ul);
+    CHECK(site(43) == 1ul);
+    CHECK(site(44) == 2ul);
+
+    cvec_ul_t ind = bedMatrix.getIndividual(2ul).cast<unsigned long>();
+    CHECK(ind.size() == static_cast<index_t>(100l));
+    CHECK(ind(0) == 1ul);
+    CHECK(ind(1) == 2ul);
+    CHECK(ind(2) == 2ul);
+    CHECK(ind(3) == 2ul);
+    CHECK(ind(4) == 2ul);
+    CHECK(ind(23) == 3ul);
+  }
+
+  // Test counts of missing data
+  {
+    rvec_ul_t missing = bedMatrix.getMissingCounts();
+    CHECK(missing.size() == static_cast<index_t>(100l));
+    CHECK(missing(0) == 1ul);
+    CHECK(missing(1) == 1ul);
+    CHECK(missing(2) == 3ul);
+    CHECK(missing(3) == 2ul);
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getMissingCount(i) == missing(static_cast<index_t>(i)));
+    }
+
+    rvec_dbl_t missing_frequencies = bedMatrix.getMissingFrequencies();
+    CHECK(missing_frequencies.size() == static_cast<index_t>(100l));
+    CHECK(missing_frequencies(0) == Approx(1.0 / 50.0));
+    CHECK(missing_frequencies(1) == Approx(1.0 / 50.0));
+    CHECK(missing_frequencies(2) == Approx(3.0 / 50.0));
+    CHECK(missing_frequencies(3) == Approx(2.0 / 50.0));
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getMissingFrequency(i) == Approx(missing_frequencies(static_cast<index_t>(i))));
+    }
+  }
+
   //  auto
 }
 

@@ -24,7 +24,6 @@ namespace fs = std::filesystem;
 class BedMatrixType {
 
 private:
-
   std::chrono::milliseconds tReadBed = {};
   std::chrono::milliseconds tReadBim = {};
   std::chrono::milliseconds tReadFam = {};
@@ -75,7 +74,6 @@ private:
   BedMatrixType() = default;
 
 public:
-
   /**
    * Create a BedMatrixType from a .bed, a .bim file, and a .fam file.
    *
@@ -85,7 +83,7 @@ public:
    * @return instance of a HapsMatrixType
    */
   static BedMatrixType createFromBedBimFam(std::string_view bedFile, std::string_view bimFile,
-                                            std::string_view famFile);
+                                           std::string_view famFile);
 
   /**
    * @return the number of individuals, determined from the .fam file
@@ -126,6 +124,41 @@ public:
   [[nodiscard]] rvec_uint8_t getIndividual(unsigned long individualId) const;
 
   /**
+   * Get all individual data for a single site.
+   *
+   * @param siteId the id of the site
+   * @return the jth column of the data matrix, where j is siteId.
+   */
+  [[nodiscard]] cvec_uint8_t getSite(unsigned long siteId) const;
+
+  /**
+   * Get the count of missing data for a given site.
+   * @param siteId the site ID
+   * @return count of missing data at the given site
+   */
+  [[nodiscard]] unsigned long getMissingCount(unsigned long siteId) const;
+
+
+  /**
+   * Get the counts of missing data for all sites.
+   * @return counts of missing data for all sites
+   */
+  [[nodiscard]] rvec_ul_t getMissingCounts() const;
+
+  /**
+   * Get the frequency of missing data for a given site.
+   * @param siteId the site ID
+   * @return frequency of missing data at the given site
+   */
+  [[nodiscard]] double getMissingFrequency(unsigned long siteId) const;
+
+  /**
+   * Get the frequencies of missing data for all sites.
+   * @return frequencies of missing data at all sites
+   */
+  [[nodiscard]] rvec_dbl_t getMissingFrequencies() const;
+
+  /**
    * Calculate the site-wise number of missing entries.
    *
    * @return a row vector containing count of missing data across all individuals for each site.
@@ -145,14 +178,6 @@ public:
    * @param frqFile path to the .frq file to write to
    */
   void writeFrequencies(std::string_view frqFile);
-
-  /**
-   * Get all individual data for a single site.
-   *
-   * @param siteId the id of the site
-   * @return the jth column of the data matrix, where j is siteId.
-   */
-  [[nodiscard]] cvec_uint8_t getSite(unsigned long siteId) const;
 
   [[nodiscard]] std::string printTiming() const {
     fmt::memory_buffer out;

@@ -125,6 +125,23 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
   auto hapsMatrix = HapsMatrixType::createFromHapsPlusSamples(hapsFile, samplesFile, mapFile);
   CHECK(hapsMatrix.getData().rows() == static_cast<index_t>(102l));
   CHECK(hapsMatrix.getData().cols() == static_cast<index_t>(100l));
+  CHECK(hapsMatrix.getNumSites() == 102ul);
+  CHECK(hapsMatrix.getNumIndividuals() == 50ul);
+  CHECK(hapsMatrix.getNumHaps() == 100ul);
+
+  CHECK(hapsMatrix.getMinorAlleleCount(0ul) == 1ul);
+  CHECK(hapsMatrix.getDerivedAlleleCount(0ul) == 1ul);
+
+  CHECK(hapsMatrix.getMinorAlleleCount(8ul) == 29ul);
+  CHECK(hapsMatrix.getDerivedAlleleCount(8ul) == 71ul);
+
+  cvec_ul_t minorAlleleCounts = hapsMatrix.getMinorAlleleCounts();
+  CHECK(minorAlleleCounts(0) == 1ul);
+  CHECK(minorAlleleCounts(8) == 29ul);
+
+  cvec_ul_t derivedAlleleCounts = hapsMatrix.getDerivedAlleleCounts();
+  CHECK(derivedAlleleCounts(0) == 1ul);
+  CHECK(derivedAlleleCounts(8) == 71ul);
 }
 
 } // namespace asmc

@@ -71,6 +71,19 @@ private:
   void validateHapsRow(const std::vector<std::string>& row) const;
 
   /**
+   * Get the raw allele count for a given site.
+   * @param siteId the site ID
+   * @return the number of 1s in row #sideId
+   */
+  [[nodiscard]] unsigned long getAlleleCount(unsigned long siteId) const;
+
+  /**
+   * Get the raw allele counts for all sites.
+   * @return a vector of counts, one for each site
+   */
+  [[nodiscard]] cvec_ul_t getAlleleCounts() const;
+
+  /**
    * Default constructor.
    */
   HapsMatrixType() = default;
@@ -91,6 +104,11 @@ public:
    * @return the number of individuals, determined from the .sample[s] file
    */
   [[nodiscard]] unsigned long getNumIndividuals() const;
+
+  /**
+   * @return the number of haps: twice the number of individuals
+   */
+  [[nodiscard]] unsigned long getNumHaps() const;
 
   /**
    * @return the number of sites, determined from the .map file
@@ -127,6 +145,36 @@ public:
    * @return the jth row of the data matrix, where j is hapId.
    */
   [[nodiscard]] cvec_uint8_t getHap(unsigned long hapId) const;
+
+  /**
+   * Get the minor allele count for a given site. This is a number in [0, #haps/2].
+   * @param siteId the site ID
+   * @return the minor allele count for the given site
+   */
+  [[nodiscard]] unsigned long getMinorAlleleCount(unsigned long siteId) const;
+
+  /**
+   * Get the derived allele count for a given site. This is the raw count, assuming 1 means derived.
+   * @param siteId the site ID
+   * @return the derived allele count for the given site
+   */
+  [[nodiscard]] unsigned long getDerivedAlleleCount(unsigned long siteId) const;
+
+  /**
+   * Get the raw minor allele counts for all sites. Each is a number in [0, #haps/2].
+   * @return a vector of minor allele counts, one for each site
+   */
+  [[nodiscard]] cvec_ul_t getMinorAlleleCounts() const;
+
+  /**
+   * Get the derived allele count for all sites. These are the raw counts, assuming 1 means derived.
+   * @return a vector of derived allele counts, one for each site
+   */
+  [[nodiscard]] cvec_ul_t getDerivedAlleleCounts() const;
+
+  /**
+   */
+  [[nodiscard]] double getFrequency(unsigned long siteId) const;
 };
 
 } // namespace asmc

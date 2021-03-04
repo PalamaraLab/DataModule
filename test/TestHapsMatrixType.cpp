@@ -157,6 +157,11 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
     cvec_ul_t derivedAlleleCounts = hapsMatrix.getDerivedAlleleCounts();
     CHECK(derivedAlleleCounts(0) == 1ul);
     CHECK(derivedAlleleCounts(8) == 71ul);
+
+    for (unsigned long i = 0ul; i < hapsMatrix.getNumSites(); ++i) {
+      CHECK(minorAlleleCounts(static_cast<index_t>(i)) == hapsMatrix.getMinorAlleleCount(i));
+      CHECK(derivedAlleleCounts(static_cast<index_t>(i)) == hapsMatrix.getDerivedAlleleCount(i));
+    }
   }
 
   // Test frequencies
@@ -174,6 +179,11 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
     cvec_dbl_t derivedAlleleFrequencies = hapsMatrix.getDerivedAlleleFrequencies();
     CHECK(derivedAlleleFrequencies(0) == Approx(1.0 / 100.0));
     CHECK(derivedAlleleFrequencies(8) == Approx(71.0 / 100.0));
+
+    for (unsigned long i = 0ul; i < hapsMatrix.getNumSites(); ++i) {
+      CHECK(minorAlleleFrequencies(static_cast<index_t>(i)) == Approx(hapsMatrix.getMinorAlleleFrequency(i)));
+      CHECK(derivedAlleleFrequencies(static_cast<index_t>(i)) == Approx(hapsMatrix.getDerivedAlleleFrequency(i)));
+    }
   }
 }
 

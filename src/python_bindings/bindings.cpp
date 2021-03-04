@@ -23,8 +23,15 @@ PYBIND11_MODULE(asmc_data_module, m) {
       .def("getData", &asmc::HapsMatrixType::getData)
       .def("getSite", &asmc::HapsMatrixType::getSite)
       .def("getHap", &asmc::HapsMatrixType::getHap)
+      .def("getIndividual", &asmc::HapsMatrixType::getIndividual)
       .def("getMinorAlleleCount", &asmc::HapsMatrixType::getMinorAlleleCount)
       .def("getDerivedAlleleCount", &asmc::HapsMatrixType::getDerivedAlleleCount)
+      .def("getMinorAlleleCounts", &asmc::HapsMatrixType::getMinorAlleleCounts)
+      .def("getDerivedAlleleCounts", &asmc::HapsMatrixType::getDerivedAlleleCounts)
+      .def("getMinorAlleleFrequency", &asmc::HapsMatrixType::getMinorAlleleFrequency)
+      .def("getDerivedAlleleFrequency", &asmc::HapsMatrixType::getDerivedAlleleFrequency)
+      .def("getMinorAlleleFrequencies", &asmc::HapsMatrixType::getMinorAlleleFrequencies)
+      .def("getDerivedAlleleFrequencies", &asmc::HapsMatrixType::getDerivedAlleleFrequencies)
       ;
 
   py::class_<asmc::BedMatrixType>(m, "BedMatrixType")

@@ -173,6 +173,32 @@ public:
   [[nodiscard]] cvec_ul_t getDerivedAlleleCounts() const;
 
   /**
+   * Get the minor allele frequency for a given site. This is a number in [0, 0.5].
+   * @param siteId the site ID
+   * @return the minor allele frequency for the given site
+   */
+  [[nodiscard]] double getMinorAlleleFrequency(unsigned long siteId) const;
+
+  /**
+   * Get the derived allele frequency for a given site. This is the raw frequency, assuming 1 means derived.
+   * @param siteId the site ID
+   * @return the derived allele frequency for the given site
+   */
+  [[nodiscard]] double getDerivedAlleleFrequency(unsigned long siteId) const;
+
+  /**
+   * Get the minor allele frequencies for all sites. These are numbers in [0, 0.5].
+   * @return a vector of minor allele frequencies, one for each site
+   */
+  [[nodiscard]] cvec_dbl_t getMinorAlleleFrequencies() const;
+
+  /**
+   * Get the derived allele frequencies for all sites. These are the raw frequencies, assuming 1 means derived.
+   * @return a vector of minor allele frequencies, one for each site
+   */
+  [[nodiscard]] cvec_dbl_t getDerivedAlleleFrequencies() const;
+
+  /**
    */
   [[nodiscard]] double getFrequency(unsigned long siteId) const;
 };

@@ -129,19 +129,39 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
   CHECK(hapsMatrix.getNumIndividuals() == 50ul);
   CHECK(hapsMatrix.getNumHaps() == 100ul);
 
-  CHECK(hapsMatrix.getMinorAlleleCount(0ul) == 1ul);
-  CHECK(hapsMatrix.getDerivedAlleleCount(0ul) == 1ul);
+  // Test counts
+  {
+    CHECK(hapsMatrix.getMinorAlleleCount(0ul) == 1ul);
+    CHECK(hapsMatrix.getDerivedAlleleCount(0ul) == 1ul);
 
-  CHECK(hapsMatrix.getMinorAlleleCount(8ul) == 29ul);
-  CHECK(hapsMatrix.getDerivedAlleleCount(8ul) == 71ul);
+    CHECK(hapsMatrix.getMinorAlleleCount(8ul) == 29ul);
+    CHECK(hapsMatrix.getDerivedAlleleCount(8ul) == 71ul);
 
-  cvec_ul_t minorAlleleCounts = hapsMatrix.getMinorAlleleCounts();
-  CHECK(minorAlleleCounts(0) == 1ul);
-  CHECK(minorAlleleCounts(8) == 29ul);
+    cvec_ul_t minorAlleleCounts = hapsMatrix.getMinorAlleleCounts();
+    CHECK(minorAlleleCounts(0) == 1ul);
+    CHECK(minorAlleleCounts(8) == 29ul);
 
-  cvec_ul_t derivedAlleleCounts = hapsMatrix.getDerivedAlleleCounts();
-  CHECK(derivedAlleleCounts(0) == 1ul);
-  CHECK(derivedAlleleCounts(8) == 71ul);
+    cvec_ul_t derivedAlleleCounts = hapsMatrix.getDerivedAlleleCounts();
+    CHECK(derivedAlleleCounts(0) == 1ul);
+    CHECK(derivedAlleleCounts(8) == 71ul);
+  }
+
+  // Test frequencies
+  {
+    CHECK(hapsMatrix.getMinorAlleleFrequency(0ul) == Approx(1.0 / 100.0));
+    CHECK(hapsMatrix.getDerivedAlleleFrequency(0ul) == Approx(1.0 / 100.0));
+
+    CHECK(hapsMatrix.getMinorAlleleFrequency(8ul) == Approx(29.0 / 100.0));
+    CHECK(hapsMatrix.getDerivedAlleleFrequency(8ul) == Approx(71.0 / 100.0));
+
+    cvec_dbl_t minorAlleleFrequencies = hapsMatrix.getMinorAlleleFrequencies();
+    CHECK(minorAlleleFrequencies(0) == Approx(1.0 / 100.0));
+    CHECK(minorAlleleFrequencies(8) == Approx(29.0 / 100.0));
+
+    cvec_dbl_t derivedAlleleFrequencies = hapsMatrix.getDerivedAlleleFrequencies();
+    CHECK(derivedAlleleFrequencies(0) == Approx(1.0 / 100.0));
+    CHECK(derivedAlleleFrequencies(8) == Approx(71.0 / 100.0));
+  }
 }
 
 } // namespace asmc

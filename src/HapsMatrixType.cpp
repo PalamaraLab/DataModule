@@ -219,6 +219,24 @@ cvec_ul_t HapsMatrixType::getDerivedAlleleCounts() const {
   return getAlleleCounts();
 }
 
+double HapsMatrixType::getMinorAlleleFrequency(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return static_cast<double>(getMinorAlleleCount(siteId)) / static_cast<double>(getNumHaps());
+}
+
+double HapsMatrixType::getDerivedAlleleFrequency(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return static_cast<double>(getDerivedAlleleCount(siteId)) / static_cast<double>(getNumHaps());
+}
+
+cvec_dbl_t HapsMatrixType::getMinorAlleleFrequencies() const {
+  return getMinorAlleleCounts().cast<double>().array() / static_cast<double>(getNumHaps());
+}
+
+cvec_dbl_t HapsMatrixType::getDerivedAlleleFrequencies() const {
+  return getDerivedAlleleCounts().cast<double>().array() / static_cast<double>(getNumHaps());
+}
+
 cvec_uint8_t HapsMatrixType::getHap(unsigned long hapId) const {
   assert(hapId < getNumHaps());
   return mData.col(static_cast<index_t>(hapId));

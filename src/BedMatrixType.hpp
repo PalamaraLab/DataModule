@@ -47,6 +47,9 @@ private:
   /** The detected delimeter used in the .fam file */
   std::string mFamDelimeter = " ";
 
+  /** A row vector of the number of missing pieces of data for each site */
+  rvec_ul_t mMissingCounts;
+
   /** Determine the appropriate delimiters for the .fam file */
   void determineFamDelimiter(const fs::path& famFile);
 
@@ -67,6 +70,19 @@ private:
    * @param famFile path to the .fam file
    */
   void readFamFile(const fs::path& famFile);
+
+  /**
+   * Get the raw allele count for a given site.
+   * @param siteId the site ID
+   * @return the number of 1s in row #sideId
+   */
+  [[nodiscard]] unsigned long getAlleleCount(unsigned long siteId) const;
+
+  /**
+   * Get the raw allele counts for all sites.
+   * @return a vector of counts, one for each site
+   */
+  [[nodiscard]] rvec_ul_t getAlleleCounts() const;
 
   /**
    * Default constructor.
@@ -138,7 +154,6 @@ public:
    */
   [[nodiscard]] unsigned long getMissingCount(unsigned long siteId) const;
 
-
   /**
    * Get the counts of missing data for all sites.
    * @return counts of missing data for all sites
@@ -157,6 +172,32 @@ public:
    * @return frequencies of missing data at all sites
    */
   [[nodiscard]] rvec_dbl_t getMissingFrequencies() const;
+
+  /**
+   * Get the minor allele count for a given site. This is a number in [0, #haps/2].
+   * @param siteId the site ID
+   * @return the minor allele count for the given site
+   */
+  [[nodiscard]] unsigned long getMinorAlleleCount(unsigned long siteId) const;
+
+  /**
+   * Get the raw minor allele counts for all sites. Each is a number in [0, #haps/2].
+   * @return a vector of minor allele counts, one for each site
+   */
+  [[nodiscard]] rvec_ul_t getMinorAlleleCounts() const;
+
+  /**
+   * Get the derived allele count for a given site. This is the raw count, assuming 1 means derived.
+   * @param siteId the site ID
+   * @return the derived allele count for the given site
+   */
+  [[nodiscard]] unsigned long getDerivedAlleleCount(unsigned long siteId) const;
+
+  /**
+   * Get the derived allele count for all sites. These are the raw counts, assuming 1 means derived.
+   * @return a vector of derived allele counts, one for each site
+   */
+  [[nodiscard]] rvec_ul_t getDerivedAlleleCounts() const;
 
   /**
    * Calculate the site-wise number of missing entries.

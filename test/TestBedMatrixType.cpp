@@ -90,7 +90,28 @@ TEST_CASE("BedMatrixType: test (small) real example", "[BedMatrixType]") {
     }
   }
 
-  //  auto
+  // Test allele counts
+  {
+    rvec_ul_t derivedAlleleCounts = bedMatrix.getDerivedAlleleCounts();
+    CHECK(derivedAlleleCounts.size() == static_cast<index_t>(100l));
+    CHECK(derivedAlleleCounts(0) == 78ul);
+    CHECK(derivedAlleleCounts(1) == 91ul);
+    CHECK(derivedAlleleCounts(2) == 70ul);
+    CHECK(derivedAlleleCounts(3) == 72ul);
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getDerivedAlleleCount(i) == derivedAlleleCounts(static_cast<index_t>(i)));
+    }
+
+    rvec_ul_t minorAlleleCounts = bedMatrix.getMinorAlleleCounts();
+    CHECK(minorAlleleCounts.size() == static_cast<index_t>(100l));
+    CHECK(minorAlleleCounts(0) == 20ul);
+    CHECK(minorAlleleCounts(1) == 7ul);
+    CHECK(minorAlleleCounts(2) == 24ul);
+    CHECK(minorAlleleCounts(3) == 24ul);
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getMinorAlleleCount(i) == minorAlleleCounts(static_cast<index_t>(i)));
+    }
+  }
 }
 
 } // namespace asmc

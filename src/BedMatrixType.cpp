@@ -77,6 +77,7 @@ void BedMatrixType::readBedFile(const fs::path& bedFile) {
 
   read_bed_chunk(bedFile.string().data(), nRows, nCols, rowStart, colStart, rowEnd, colEnd, mData.data(),
                  strides.data());
+  mMissingCounts = (mData.array() == static_cast<uint8_t>(3)).colwise().count().cast<unsigned long>();
   tReadBed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
@@ -118,6 +119,15 @@ void BedMatrixType::readFamFile(const fs::path& famFile) {
   tReadFam = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
+unsigned long BedMatrixType::getAlleleCount(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return mData.col(static_cast<index_t>(siteId)).cast<unsigned long>().sum() - 3ul * getMissingCount(siteId);
+}
+
+rvec_ul_t BedMatrixType::getAlleleCounts() const {
+  return mData.cast<unsigned long>().colwise().sum().array() - (3ul * mMissingCounts).array();
+}
+
 unsigned long BedMatrixType::getNumIndividuals() const {
   return mNumIndividuals;
 }
@@ -154,8 +164,7 @@ const std::vector<std::string>& BedMatrixType::getSiteNames() const {
 
 unsigned long BedMatrixType::getMissingCount(unsigned long siteId) const {
   assert(siteId < getNumSites());
-  return static_cast<unsigned long>(
-      (mData.col(static_cast<index_t>(siteId)).array() == static_cast<uint8_t>(3)).count());
+  return mMissingCounts(static_cast<index_t>(siteId));
 }
 
 rvec_ul_t BedMatrixType::getMissingCounts() const {
@@ -167,7 +176,29 @@ double BedMatrixType::getMissingFrequency(unsigned long siteId) const {
 }
 
 rvec_dbl_t BedMatrixType::getMissingFrequencies() const {
-  return getMissingCounts().cast<double>().array() / static_cast<double>(getNumIndividuals());
+  return mMissingCounts.cast<double>().array() / static_cast<double>(getNumIndividuals());
+}
+
+unsigned long BedMatrixType::getMinorAlleleCount(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  const unsigned long rawCount = getAlleleCount(siteId);
+  const unsigned long notMissing = getNumIndividuals() - getMissingCount(siteId);
+  return rawCount <= notMissing ? rawCount : 2ul * notMissing - rawCount;
+}
+
+rvec_ul_t BedMatrixType::getMinorAlleleCounts() const {
+  rvec_ul_t rawCounts = getAlleleCounts();
+  rvec_ul_t threshold = getNumIndividuals() - getMissingCounts().array();
+  return (rawCounts.array() > threshold.array()).select(2ul * threshold.array() - rawCounts.array(), rawCounts);
+}
+
+unsigned long BedMatrixType::getDerivedAlleleCount(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return getAlleleCount(siteId);
+}
+
+rvec_ul_t BedMatrixType::getDerivedAlleleCounts() const {
+  return getAlleleCounts();
 }
 
 rvec_ul_t BedMatrixType::countMissing() const {

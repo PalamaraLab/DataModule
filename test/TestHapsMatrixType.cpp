@@ -129,6 +129,19 @@ TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {
   CHECK(hapsMatrix.getNumIndividuals() == 50ul);
   CHECK(hapsMatrix.getNumHaps() == 100ul);
 
+  // Test getting data as float
+  {
+    const mat_uint8_t& data = hapsMatrix.getData();
+    mat_float_t data_f = hapsMatrix.getDataAsFloat();
+
+    for (int i = 0; i < data.rows(); ++i) {
+      for (int j = 0; j < data.cols(); ++j) {
+        const bool val_identical = data(i, j) == static_cast<uint8_t>(data_f(i, j));
+        CHECK(val_identical);
+      }
+    }
+  }
+
   // Test getting slices
   {
     auto site = hapsMatrix.getSite(3ul);

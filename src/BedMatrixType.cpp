@@ -149,6 +149,10 @@ const mat_uint8_t& BedMatrixType::getData() const {
   return mData;
 }
 
+mat_float_t BedMatrixType::getDataAsFloat() const {
+  return (mData.cast<float>().array() == static_cast<float>(mMissingInt)).select(mMissingFloat, mData.cast<float>());
+}
+
 rvec_uint8_t BedMatrixType::getIndividual(unsigned long individualId) const {
   assert(individualId < getNumIndividuals());
   return mData.row(static_cast<index_t>(individualId));

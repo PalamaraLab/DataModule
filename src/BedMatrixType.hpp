@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include <filesystem>
+#include <limits>
 #include <string_view>
 #include <vector>
 
@@ -51,7 +52,7 @@ private:
   const long mMissingInt = 3l;
 
   /** The value of missing data in floating format */
-  const float mMissingFloat = NAN;
+  const float mMissingFloat = std::numeric_limits<float>::quiet_NaN();
 
   /** A row vector of the number of missing pieces of data for each site */
   rvec_ul_t mMissingCounts;
@@ -133,9 +134,14 @@ public:
   [[nodiscard]] const std::vector<std::string>& getSiteNames() const;
 
   /**
-   * @return the vector of raw boolean data, contained in the .hap[s][.gz] file
+   * @return the vector of raw uint8_t data, contained in the .bed file with 3 representing missing data
    */
   [[nodiscard]] const mat_uint8_t& getData() const;
+
+  /**
+   * @return the vector of raw float data, with NAN representing missing data
+   */
+  [[nodiscard]] mat_float_t getDataAsFloat() const;
 
   /**
    * Get all variant data for a single individual.

@@ -183,6 +183,10 @@ const mat_uint8_t& HapsMatrixType::getData() const {
   return mData;
 }
 
+mat_float_t HapsMatrixType::getDataAsFloat() const {
+  return mData.cast<float>();
+}
+
 rvec_uint8_t HapsMatrixType::getSite(unsigned long siteId) const {
   assert(siteId < getNumSites());
   return mData.row(static_cast<index_t>(siteId));

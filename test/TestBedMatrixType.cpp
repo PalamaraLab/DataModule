@@ -47,6 +47,23 @@ TEST_CASE("BedMatrixType: test (small) real example", "[BedMatrixType]") {
     CHECK(siteNames.at(67ul) == "null_67");
   }
 
+  // Test getting data as float
+  {
+    const mat_uint8_t& data = bedMatrix.getData();
+    mat_float_t data_f = bedMatrix.getDataAsFloat();
+    // x == NAN always returns false, so count NAN by doing (x != x).count()
+    CHECK((data.array() == static_cast<uint8_t>(3)).count() == (data_f.array() != data_f.array()).count());
+
+    for (int i = 0; i < data.rows(); ++i) {
+      for (int j = 0; j < data.cols(); ++j) {
+        const bool val_identical = data(i, j) == static_cast<uint8_t>(data_f(i, j));
+        const bool is_nan = std::isnan(data_f(i, j));
+        const bool val_expected = val_identical || is_nan;
+        CHECK(val_expected);
+      }
+    }
+  }
+
   // Test getting slices
   {
     cvec_ul_t site = bedMatrix.getSite(0ul).cast<unsigned long>();

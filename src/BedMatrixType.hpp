@@ -47,6 +47,12 @@ private:
   /** The detected delimeter used in the .fam file */
   std::string mFamDelimeter = " ";
 
+  /** The value of missing data in integer format */
+  const long mMissingInt = 3l;
+
+  /** The value of missing data in floating format */
+  const float mMissingFloat = NAN;
+
   /** A row vector of the number of missing pieces of data for each site */
   rvec_ul_t mMissingCounts;
 
@@ -200,18 +206,30 @@ public:
   [[nodiscard]] rvec_ul_t getDerivedAlleleCounts() const;
 
   /**
-   * Calculate the site-wise number of missing entries.
-   *
-   * @return a row vector containing count of missing data across all individuals for each site.
+   * Get the minor allele frequency for a given site. This is a number in [0, 0.5].
+   * @param siteId the site ID
+   * @return the minor allele frequency for the given site
    */
-  [[nodiscard]] rvec_ul_t countMissing() const;
+  [[nodiscard]] double getMinorAlleleFrequency(unsigned long siteId) const;
 
   /**
-   * Calculate frequencies.
-   *
-   * @return a row vector containing frequencies across all individuals for each site.
+   * Get the derived allele frequency for a given site. This is the raw frequency, assuming 1 means derived.
+   * @param siteId the site ID
+   * @return the derived allele frequency for the given site
    */
-  [[nodiscard]] rvec_dbl_t calculateFrequencies() const;
+  [[nodiscard]] double getDerivedAlleleFrequency(unsigned long siteId) const;
+
+  /**
+   * Get the minor allele frequencies for all sites. These are numbers in [0, 0.5].
+   * @return a vector of minor allele frequencies, one for each site
+   */
+  [[nodiscard]] cvec_dbl_t getMinorAlleleFrequencies() const;
+
+  /**
+   * Get the derived allele frequencies for all sites. These are the raw frequencies, assuming 1 means derived.
+   * @return a vector of minor allele frequencies, one for each site
+   */
+  [[nodiscard]] cvec_dbl_t getDerivedAlleleFrequencies() const;
 
   /**
    * Write a .frq file containing the frequency data.

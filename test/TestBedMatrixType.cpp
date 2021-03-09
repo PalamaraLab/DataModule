@@ -112,6 +112,30 @@ TEST_CASE("BedMatrixType: test (small) real example", "[BedMatrixType]") {
       CHECK(bedMatrix.getMinorAlleleCount(i) == minorAlleleCounts(static_cast<index_t>(i)));
     }
   }
+
+  // Test allele frequencies
+  {
+    rvec_dbl_t derivedAlleleFrequencies = bedMatrix.getDerivedAlleleFrequencies();
+    CHECK(derivedAlleleFrequencies.size() == static_cast<index_t>(100l));
+    CHECK(derivedAlleleFrequencies(0) == Approx(0.795918345451355));
+    CHECK(derivedAlleleFrequencies(1) == Approx(0.9285714030265808));
+    CHECK(derivedAlleleFrequencies(2) == Approx(0.7446808218955994));
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getDerivedAlleleFrequency(i) == derivedAlleleFrequencies(static_cast<index_t>(i)));
+    }
+  }
+
+  // Test allele frequencies
+  {
+    rvec_dbl_t minorAlleleFrequencies = bedMatrix.getMinorAlleleFrequencies();
+    CHECK(minorAlleleFrequencies.size() == static_cast<index_t>(100l));
+    CHECK(minorAlleleFrequencies(0) == Approx(1.0 - 0.795918345451355));
+    CHECK(minorAlleleFrequencies(1) == Approx(1.0 - 0.9285714030265808));
+    CHECK(minorAlleleFrequencies(2) == Approx(1.0 - 0.7446808218955994));
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getMinorAlleleFrequency(i) == minorAlleleFrequencies(static_cast<index_t>(i)));
+    }
+  }
 }
 
 } // namespace asmc

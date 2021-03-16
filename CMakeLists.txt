@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.16)
 message(STATUS "Using CMake version ${CMAKE_VERSION}")
 include(cmake/AutodetectVcpkgToolchainFile.cmake)
 
-project(DataModule LANGUAGES C CXX VERSION 0.0)
+project(DataModule LANGUAGES C CXX VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -3,7 +3,7 @@ name: Build python wheels
 on:
   push:
     branches:
-      - main
+      - xmain
   pull_request:
     branches:
       - main

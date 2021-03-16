@@ -3,7 +3,7 @@ name: Sanitiser checks
 on:
   push:
     branches:
-      - main
+      - xmain
   pull_request:
     branches:
       - '**'

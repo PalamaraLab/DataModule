@@ -3,7 +3,7 @@ name: "Unit tests: Windows"
 on:
   push:
     branches:
-      - main
+      - xmain
   pull_request:
     branches:
       - '**'

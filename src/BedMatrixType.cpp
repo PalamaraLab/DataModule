@@ -7,7 +7,6 @@ extern "C" {
 #include "third_party/pandas_plink/bed_reader.h"
 }
 
-
 #include "utils/FileUtils.hpp"
 #include "utils/StringUtils.hpp"
 
@@ -26,7 +25,7 @@ extern "C" {
 namespace asmc {
 
 BedMatrixType BedMatrixType::createFromBedBimFam(std::string_view bedFile, std::string_view bimFile,
-                                                   std::string_view famFile) {
+                                                 std::string_view famFile) {
   if (!fs::exists(bedFile) || !fs::is_regular_file(bedFile)) {
     throw std::runtime_error(fmt::format("Expected .bed file, but got {}", bedFile));
   }
@@ -50,8 +49,8 @@ void BedMatrixType::determineFamDelimiter(const fs::path& famFile) {
   auto firstLine = readNextLineFromGzip(gzFile);
 
   std::vector<std::string> delimiters = {" ", "\t"};
-  for(const auto& delimiter : delimiters) {
-    if(splitTextByDelimiter(firstLine, delimiter).size() == 6ul) {
+  for (const auto& delimiter : delimiters) {
+    if (splitTextByDelimiter(firstLine, delimiter).size() == 6ul) {
       mFamDelimeter = delimiter;
       gzclose(gzFile);
       return;
@@ -77,7 +76,7 @@ void BedMatrixType::readBedFile(const fs::path& bedFile) {
 
   read_bed_chunk(bedFile.string().data(), nRows, nCols, rowStart, colStart, rowEnd, colEnd, mData.data(),
                  strides.data());
-  mMissingCounts = (mData.array() == static_cast<uint8_t>(3)).colwise().count().cast<unsigned long>();
+  mMissingCounts = (mData.array() == static_cast<uint8_t>(mMissingInt)).colwise().count().cast<unsigned long>();
   tReadBed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
@@ -121,11 +120,13 @@ void BedMatrixType::readFamFile(const fs::path& famFile) {
 
 unsigned long BedMatrixType::getAlleleCount(unsigned long siteId) const {
   assert(siteId < getNumSites());
-  return mData.col(static_cast<index_t>(siteId)).cast<unsigned long>().sum() - 3ul * getMissingCount(siteId);
+  return mData.col(static_cast<index_t>(siteId)).cast<unsigned long>().sum() -
+         static_cast<unsigned long>(mMissingInt) * getMissingCount(siteId);
 }
 
 rvec_ul_t BedMatrixType::getAlleleCounts() const {
-  return mData.cast<unsigned long>().colwise().sum().array() - (3ul * mMissingCounts).array();
+  return mData.cast<unsigned long>().colwise().sum().array() -
+         (static_cast<unsigned long>(mMissingInt) * mMissingCounts).array();
 }
 
 unsigned long BedMatrixType::getNumIndividuals() const {
@@ -148,6 +149,10 @@ const mat_uint8_t& BedMatrixType::getData() const {
   return mData;
 }
 
+mat_float_t BedMatrixType::getDataAsFloat() const {
+  return (mData.cast<float>().array() == static_cast<float>(mMissingInt)).select(mMissingFloat, mData.cast<float>());
+}
+
 rvec_uint8_t BedMatrixType::getIndividual(unsigned long individualId) const {
   assert(individualId < getNumIndividuals());
   return mData.row(static_cast<index_t>(individualId));
@@ -168,7 +173,7 @@ unsigned long BedMatrixType::getMissingCount(unsigned long siteId) const {
 }
 
 rvec_ul_t BedMatrixType::getMissingCounts() const {
-  return (mData.array() == static_cast<uint8_t>(3)).colwise().count().cast<unsigned long>();
+  return mMissingCounts;
 }
 
 double BedMatrixType::getMissingFrequency(unsigned long siteId) const {
@@ -201,28 +206,36 @@ rvec_ul_t BedMatrixType::getDerivedAlleleCounts() const {
   return getAlleleCounts();
 }
 
-rvec_ul_t BedMatrixType::countMissing() const {
-  return (mData.array() == static_cast<uint8_t>(3)).colwise().count().cast<unsigned long>();
+double BedMatrixType::getMinorAlleleFrequency(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return static_cast<double>(getMinorAlleleCount(siteId)) /
+         (2.0 * static_cast<double>(getNumIndividuals() - getMissingCount(siteId)));
 }
 
-rvec_dbl_t BedMatrixType::calculateFrequencies() const {
+double BedMatrixType::getDerivedAlleleFrequency(unsigned long siteId) const {
+  assert(siteId < getNumSites());
+  return static_cast<double>(getDerivedAlleleCount(siteId)) /
+         (2.0 * static_cast<double>(getNumIndividuals() - getMissingCount(siteId)));
+}
 
-  rvec_ul_t numMissing = countMissing();
+cvec_dbl_t BedMatrixType::getMinorAlleleFrequencies() const {
+  return getMinorAlleleCounts().cast<double>().array() /
+         (2.0 * (getNumIndividuals() - getMissingCounts().array()).cast<double>());
+}
 
-  auto colSums = mData.cast<unsigned long>().colwise().sum() - 3ul * numMissing;
-  auto maxSums = 2ul * (getNumIndividuals() - numMissing.array());
-  return (colSums.cast<float>().array() > 0.5f * maxSums.cast<float>()).select(maxSums - colSums.array(), colSums).cast<double>() / maxSums.cast<double>();
+cvec_dbl_t BedMatrixType::getDerivedAlleleFrequencies() const {
+  return getDerivedAlleleCounts().cast<double>().array() /
+         (2.0 * (getNumIndividuals() - getMissingCounts().array()).cast<double>());
 }
 
 void BedMatrixType::writeFrequencies(std::string_view frqFile) {
 
-  auto freq = calculateFrequencies();
-  rvec_ul_t NCHROBS = 2ul * (getNumIndividuals() - countMissing().array());
+  rvec_dbl_t freq = getMinorAlleleFrequencies();
+  rvec_ul_t NCHROBS = 2ul * (getNumIndividuals() - mMissingCounts.array());
   auto t = std::chrono::high_resolution_clock::now();
 
   FILE* fp = std::fopen(frqFile.data(), "w");
   fmt::print(fp, " CHR           SNP   A1   A2          MAF  NCHROBS\n", freq[0], NCHROBS[0]);
-
 
   for (unsigned long i = 0ul; i < getNumSites(); ++i) {
     auto ii = static_cast<index_t>(i);

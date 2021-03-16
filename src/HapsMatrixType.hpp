@@ -126,9 +126,14 @@ public:
   [[nodiscard]] const std::vector<double>& getGeneticPositions() const;
 
   /**
-   * @return the vector of raw boolean data, contained in the .hap[s][.gz] file
+   * @return the matrix of raw uint8_t data
    */
   [[nodiscard]] const mat_uint8_t& getData() const;
+
+  /**
+   * @return the matrix of raw data, cast to float
+   */
+  [[nodiscard]] mat_float_t getDataAsFloat() const;
 
   /**
    * Get all haplotype data for a single site. This is a row from the data matrix and will be a boolean row vector of

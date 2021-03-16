@@ -47,6 +47,23 @@ TEST_CASE("BedMatrixType: test (small) real example", "[BedMatrixType]") {
     CHECK(siteNames.at(67ul) == "null_67");
   }
 
+  // Test getting data as float
+  {
+    const mat_uint8_t& data = bedMatrix.getData();
+    mat_float_t data_f = bedMatrix.getDataAsFloat();
+    // x == NAN always returns false, so count NAN by doing (x != x).count()
+    CHECK((data.array() == static_cast<uint8_t>(3)).count() == (data_f.array() != data_f.array()).count());
+
+    for (int i = 0; i < data.rows(); ++i) {
+      for (int j = 0; j < data.cols(); ++j) {
+        const bool val_identical = data(i, j) == static_cast<uint8_t>(data_f(i, j));
+        const bool is_nan = std::isnan(data_f(i, j));
+        const bool val_expected = val_identical || is_nan;
+        CHECK(val_expected);
+      }
+    }
+  }
+
   // Test getting slices
   {
     cvec_ul_t site = bedMatrix.getSite(0ul).cast<unsigned long>();
@@ -110,6 +127,30 @@ TEST_CASE("BedMatrixType: test (small) real example", "[BedMatrixType]") {
     CHECK(minorAlleleCounts(3) == 24ul);
     for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
       CHECK(bedMatrix.getMinorAlleleCount(i) == minorAlleleCounts(static_cast<index_t>(i)));
+    }
+  }
+
+  // Test allele frequencies
+  {
+    rvec_dbl_t derivedAlleleFrequencies = bedMatrix.getDerivedAlleleFrequencies();
+    CHECK(derivedAlleleFrequencies.size() == static_cast<index_t>(100l));
+    CHECK(derivedAlleleFrequencies(0) == Approx(0.795918345451355));
+    CHECK(derivedAlleleFrequencies(1) == Approx(0.9285714030265808));
+    CHECK(derivedAlleleFrequencies(2) == Approx(0.7446808218955994));
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getDerivedAlleleFrequency(i) == derivedAlleleFrequencies(static_cast<index_t>(i)));
+    }
+  }
+
+  // Test allele frequencies
+  {
+    rvec_dbl_t minorAlleleFrequencies = bedMatrix.getMinorAlleleFrequencies();
+    CHECK(minorAlleleFrequencies.size() == static_cast<index_t>(100l));
+    CHECK(minorAlleleFrequencies(0) == Approx(1.0 - 0.795918345451355));
+    CHECK(minorAlleleFrequencies(1) == Approx(1.0 - 0.9285714030265808));
+    CHECK(minorAlleleFrequencies(2) == Approx(1.0 - 0.7446808218955994));
+    for (unsigned long i = 0; i < bedMatrix.getNumSites(); ++i) {
+      CHECK(bedMatrix.getMinorAlleleFrequency(i) == minorAlleleFrequencies(static_cast<index_t>(i)));
     }
   }
 }

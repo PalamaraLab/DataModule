@@ -13,6 +13,9 @@ jobs:
   build-and-test:
     name: Unit tests on Ubuntu
     runs-on: ubuntu-20.04
+    env:
+      CC: gcc-9
+      CXX: g++-9
 
     steps:
 
@@ -28,7 +31,7 @@ jobs:
           path: |
             vcpkg/
             build_dir/vcpkg_installed/
-          key: ${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg/CHANGELOG.md') }}
+          key: ${{ runner.os }}-${{ env.CXX }}-${{ hashFiles('vcpkg.json', 'vcpkg/CHANGELOG.md') }}
 
       - name: make build directory
         run: mkdir build_dir
@@ -37,8 +40,6 @@ jobs:
       - name: cmake configure
         run: cmake .. -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Debug
         working-directory: build_dir
-        env:
-          CXX: g++-9
 
       - name: cmake build
         run: cmake --build . --parallel 2 --target unit_tests
@@ -58,8 +59,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install .[dev]
-        env:
-          CXX: g++-9
 
       - name: python unit tests
         run: |

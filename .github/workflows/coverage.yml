@@ -31,7 +31,7 @@ jobs:
           path: |
             vcpkg/
             build_dir/vcpkg_installed/
-          key: ${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg/CHANGELOG.md') }}
+          key: ${{ runner.os }}-${{ env.CXX }}-${{ hashFiles('vcpkg.json', 'vcpkg/CHANGELOG.md') }}
 
       - name: install tools
         run: sudo apt install lcov libcurl4-openssl-dev

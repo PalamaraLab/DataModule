@@ -28,34 +28,8 @@ class CMakeExtension(Extension):
 
 class CMakeBuild(build_ext):
 
-    def deps_installed(self, ext):
-        deps = open(os.path.join(ext.sourcedir, 'scripts', 'vcpkg_dependencies'), 'r').read().split(' ')
-        vcpkg_status_file = os.path.join(ext.sourcedir, 'vcpkg', 'installed', 'vcpkg', 'status')
-
-        if os.path.isfile(vcpkg_status_file):
-            vcpkg_status = open(vcpkg_status_file, 'r').read()
-            return all([f'Package: {dep.strip()}' in vcpkg_status for dep in deps])
-
-        return False
-
-    def install_deps(self, ext):
-        install_script_dir = os.path.join(ext.sourcedir, 'scripts')
-        if platform.system().lower() == "windows":
-            subprocess.check_call(
-                [os.path.join(install_script_dir, 'install_dependencies.bat')]
-            )
-        else:
-            subprocess.check_call(
-                ['bash', os.path.join(install_script_dir, 'install_dependencies.sh')]
-            )
-
     def build_extension(self, ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
-
-        if self.deps_installed(ext):
-            print(f'All dependencies already installed...')
-        else:
-            print(f'Need to install dependencies...')
 
         # required for auto-detection of auxiliary "native" libs
         if not extdir.endswith(os.path.sep):

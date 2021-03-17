@@ -40,20 +40,8 @@ The C++ code requires the following dependencies:
 - [range-v3](https://github.com/ericniebler/range-v3) (pre C++20 ranges support)
 - [zlib](https://zlib.net/) (compression)
 
-
-The recommended way to install dependencies is to use the provided scripts, which use the [vcpkg](https://github.com/microsoft/vcpkg) submodule.
-
-On **macOS** and **Linux**, run
-
-```bash
-scripts/install_dependencies.sh
-```
-
-On **Windows**, run
-
-```bash
-scripts\install_dependencies.bat
-```
+The recommended way to install dependencies is via the built-in [vcpkg](https://github.com/microsoft/vcpkg) CMake integration.
+Assuming you have checked out the vcpkg submodule, the dependencies will be automatically installed when you run the CMake configure step below.
 
 ### Installing the Python module
 

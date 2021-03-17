@@ -28,13 +28,27 @@ set(
         data_module_hdr
         HapsMatrixType.hpp
         BedMatrixType.hpp
-        utils/EigenTypes.hpp
+        EigenTypes.hpp
         utils/FileUtils.hpp
         utils/StringUtils.hpp
 )
 
+set(
+        data_module_public_hdr
+        ${CMAKE_CURRENT_SOURCE_DIR}/HapsMatrixType.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/BedMatrixType.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/EigenTypes.hpp
+)
+
 add_library(data_module_lib STATIC ${data_module_src} ${data_module_hdr})
-target_include_directories(data_module_lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_include_directories(
+        data_module_lib INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+set_target_properties(data_module_lib PROPERTIES PUBLIC_HEADER "${data_module_public_hdr}")
+
 target_link_libraries(data_module_lib PRIVATE Eigen3::Eigen fmt::fmt range-v3 ZLIB::ZLIB)
 target_link_libraries(data_module_lib PRIVATE project_warnings project_settings)
 target_link_libraries(data_module_lib PRIVATE pandas_plink_lib)

@@ -61,8 +61,6 @@ void BedMatrixType::determineFamDelimiter(const fs::path& famFile) {
 }
 
 void BedMatrixType::readBedFile(const fs::path& bedFile) {
-  auto t = std::chrono::high_resolution_clock::now();
-
   mData.resize(static_cast<index_t>(getNumIndividuals()), static_cast<index_t>(getNumSites()));
 
   const auto nRows = static_cast<uint64_t>(getNumSites());
@@ -77,12 +75,9 @@ void BedMatrixType::readBedFile(const fs::path& bedFile) {
   read_bed_chunk(bedFile.string().data(), nRows, nCols, rowStart, colStart, rowEnd, colEnd, mData.data(),
                  strides.data());
   mMissingCounts = (mData.array() == static_cast<uint8_t>(mMissingInt)).colwise().count().cast<unsigned long>();
-  tReadBed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 void BedMatrixType::readBimFile(const fs::path& bimFile) {
-  auto t = std::chrono::high_resolution_clock::now();
-
   auto gzFile = gzopen(bimFile.string().c_str(), "r");
 
   while (!gzeof(gzFile)) {
@@ -97,12 +92,10 @@ void BedMatrixType::readBimFile(const fs::path& bimFile) {
   }
 
   gzclose(gzFile);
-  tReadBim = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 void BedMatrixType::readFamFile(const fs::path& famFile) {
   determineFamDelimiter(famFile);
-  auto t = std::chrono::high_resolution_clock::now();
   auto gzFile = gzopen(famFile.string().c_str(), "r");
 
   unsigned long numIndividuals = 0ul;
@@ -115,7 +108,6 @@ void BedMatrixType::readFamFile(const fs::path& famFile) {
   }
   mNumIndividuals = numIndividuals;
   gzclose(gzFile);
-  tReadFam = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 unsigned long BedMatrixType::getAlleleCount(unsigned long siteId) const {
@@ -232,7 +224,6 @@ void BedMatrixType::writeFrequencies(std::string_view frqFile) {
 
   rvec_dbl_t freq = getMinorAlleleFrequencies();
   rvec_ul_t NCHROBS = 2ul * (getNumIndividuals() - mMissingCounts.array());
-  auto t = std::chrono::high_resolution_clock::now();
 
   FILE* fp = std::fopen(frqFile.data(), "w");
   fmt::print(fp, " CHR           SNP   A1   A2          MAF  NCHROBS\n", freq[0], NCHROBS[0]);
@@ -243,7 +234,6 @@ void BedMatrixType::writeFrequencies(std::string_view frqFile) {
   }
 
   std::fclose(fp);
-  tWriteFrq = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - t);
 }
 
 } // namespace asmc

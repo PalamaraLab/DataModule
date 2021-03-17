@@ -4,16 +4,12 @@
 #ifndef DATA_MODULE_BED_MATRIX_TYPE_HPP
 #define DATA_MODULE_BED_MATRIX_TYPE_HPP
 
-#include "utils/EigenTypes.hpp"
-
-#include <chrono>
+#include "EigenTypes.hpp"
 
 #include <filesystem>
 #include <limits>
 #include <string_view>
 #include <vector>
-
-#include <fmt/format.h>
 
 namespace asmc {
 
@@ -25,10 +21,6 @@ namespace fs = std::filesystem;
 class BedMatrixType {
 
 private:
-  std::chrono::milliseconds tReadBed = {};
-  std::chrono::milliseconds tReadBim = {};
-  std::chrono::milliseconds tReadFam = {};
-  std::chrono::milliseconds tWriteFrq = {};
 
   /** The number of individuals */
   unsigned long mNumIndividuals = 0ul;
@@ -243,15 +235,6 @@ public:
    * @param frqFile path to the .frq file to write to
    */
   void writeFrequencies(std::string_view frqFile);
-
-  [[nodiscard]] std::string printTiming() const {
-    fmt::memory_buffer out;
-    fmt::format_to(out, "###\nReading bed:  {:>6} ms\n", tReadBed.count());
-    fmt::format_to(out, "Reading bim:  {:>6} ms\n", tReadBim.count());
-    fmt::format_to(out, "Reading fam:  {:>6} ms\n", tReadFam.count());
-    fmt::format_to(out, "Writing frq:  {:>6} ms\n###\n", tWriteFrq.count());
-    return fmt::to_string(out);
-  }
 };
 
 } // namespace asmc

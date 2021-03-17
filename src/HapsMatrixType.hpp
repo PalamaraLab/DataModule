@@ -4,7 +4,7 @@
 #ifndef DATA_MODULE_HAPS_MATRIX_TYPE_HPP
 #define DATA_MODULE_HAPS_MATRIX_TYPE_HPP
 
-#include "utils/EigenTypes.hpp"
+#include "EigenTypes.hpp"
 
 #include <filesystem>
 #include <string_view>

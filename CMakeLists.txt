@@ -61,3 +61,24 @@ if (ENABLE_UNITY)
     # Add for any project you want to apply unity builds for
     set_target_properties(intro PROPERTIES UNITY_BUILD ON)
 endif ()
+
+
+add_library(asmc::data_module ALIAS data_module_lib)
+add_library(asmc::project_warnings ALIAS project_warnings)
+add_library(asmc::project_settings ALIAS project_settings)
+add_library(asmc::pandas_plink_lib ALIAS pandas_plink_lib)
+include(GNUInstallDirs)
+install(TARGETS data_module_lib project_warnings project_settings pandas_plink_lib EXPORT asmc)
+#install(EXPORT asmc DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AsmcDataModule
+#        NAMESPACE asmc:: FILE AsmcDataModuleConfig.cmake)
+
+install(EXPORT asmc
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AsmcDataModule
+        NAMESPACE AsmcDataModule::
+        FILE AsmcDataModule_Runtime.cmake
+        COMPONENT AsmcDataModule_Runtime
+)
+
+install(FILES cmake/AsmcDataModuleConfig.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AsmcDataModule
+        )

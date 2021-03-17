@@ -57,7 +57,6 @@ PYBIND11_MODULE(asmc_data_module, m) {
       .def("getDerivedAlleleFrequency", &asmc::BedMatrixType::getDerivedAlleleFrequency)
       .def("getMinorAlleleFrequencies", &asmc::BedMatrixType::getMinorAlleleFrequencies)
       .def("getDerivedAlleleFrequencies", &asmc::BedMatrixType::getDerivedAlleleFrequencies)
-      .def("writeFrequencies", &asmc::BedMatrixType::writeFrequencies)
-      .def("printTiming", &asmc::BedMatrixType::printTiming);
+      .def("writeFrequencies", &asmc::BedMatrixType::writeFrequencies);
 
 }

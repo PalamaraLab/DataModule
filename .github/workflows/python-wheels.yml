@@ -15,7 +15,6 @@ env:
   CIBW_BUILD: cp36-* cp37-* cp38-* cp39-*
   CIBW_ARCHS: auto64
   CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-  CIBW_MANYLINUX_I686_IMAGE: manylinux2014
   CIBW_BEFORE_BUILD: pip install --upgrade pip setuptools wheel ninja
   MACOSX_DEPLOYMENT_TARGET: 10.15
 
@@ -60,6 +59,5 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
           user: __token__
-          password: ${{ secrets.TESTPYPI_TOKEN }}
+          password: ${{ secrets.PYPI_TOKEN }}
           packages_dir: wheels/
-          repository_url: https://test.pypi.org/legacy/

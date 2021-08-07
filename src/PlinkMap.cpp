@@ -27,7 +27,7 @@ void PlinkMap::validateFile() {
   // Check that the file contains either 3 or 4 tab-separated columns
   auto gzFile = gzopen(mInputFile.string().c_str(), "r");
   std::vector<std::string> firstLine = splitTextByDelimiter(readNextLineFromGzip(gzFile), "\t");
-  mNumCols = firstLine.size();
+  mNumCols = static_cast<unsigned long>(firstLine.size());
 
   if (!(mNumCols == 3ul || mNumCols == 4ul)) {
     throw std::runtime_error(

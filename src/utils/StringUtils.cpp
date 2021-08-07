@@ -3,9 +3,12 @@
 
 #include "StringUtils.hpp"
 
+#include <exception>
 #include <string>
 #include <string_view>
 #include <vector>
+
+#include <fmt/core.h>
 
 #include <range/v3/range/conversion.hpp>
 #include <range/v3/view/split.hpp>
@@ -21,6 +24,17 @@ std::string stripBack(std::string s) {
     s.pop_back();
   }
   return s;
+}
+
+unsigned long ulFromString(const std::string& s) {
+  long double ld = std::stold(s);
+  unsigned long ul = std::stoul(s);
+
+  if (static_cast<long double>(ul) != ld) {
+    throw std::runtime_error(fmt::format("String {} not representable as an unsigned integer\n", s));
+  }
+
+  return ul;
 }
 
 } // namespace asmc

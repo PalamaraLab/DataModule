@@ -20,14 +20,16 @@ set(
         data_module_src
         BedMatrixType.cpp
         HapsMatrixType.cpp
+        PlinkMap.cpp
         utils/FileUtils.cpp
         utils/StringUtils.cpp
 )
 
 set(
         data_module_hdr
-        HapsMatrixType.hpp
         BedMatrixType.hpp
+        HapsMatrixType.hpp
+        PlinkMap.hpp
         EigenTypes.hpp
         utils/FileUtils.hpp
         utils/StringUtils.hpp
@@ -35,8 +37,9 @@ set(
 
 set(
         data_module_public_hdr
-        ${CMAKE_CURRENT_SOURCE_DIR}/HapsMatrixType.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/BedMatrixType.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/HapsMatrixType.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/PlinkMap.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/EigenTypes.hpp
 )
 

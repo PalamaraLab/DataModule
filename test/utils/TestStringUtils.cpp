@@ -5,8 +5,11 @@
 
 #include <catch2/catch.hpp>
 
+#include <limits>
 #include <string>
 #include <vector>
+
+#include <fmt/core.h>
 
 namespace asmc {
 
@@ -61,6 +64,18 @@ TEST_CASE("utils/StringUtils: test stripBack", "[utils/StringUtils]") {
     const std::string text = "abc\t\n\r ";
     CHECK(stripBack(text) == "abc");
   }
+}
+
+TEST_CASE("utils/StringUtils: test ulFromString", "[utils/StringUtils]") {
+  CHECK(ulFromString("1") == 1ul);
+  CHECK(ulFromString("12345") == 12345ul);
+
+  const unsigned long maxUlAsUl = std::numeric_limits<unsigned long>::max();
+  const std::string maxUlAsString = fmt::format("{}", maxUlAsUl);
+  CHECK(ulFromString(maxUlAsString) == maxUlAsUl);
+
+  CHECK_THROWS_WITH(ulFromString("1.23"), Catch::Contains("not representable as an unsigned integer"));
+  CHECK_THROWS_WITH(ulFromString("-7"), Catch::Contains("not representable as an unsigned integer"));
 }
 
 } // namespace asmc

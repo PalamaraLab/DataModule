@@ -27,6 +27,15 @@ std::vector<std::string> splitTextByDelimiter(std::string_view text, std::string
  */
 std::string stripBack(std::string s);
 
+/**
+ * Convert a string to unsigned long, verifying the number was an integer rather than floating point type.
+ * A std::runtime_error will be thrown if the string is not representable as an unsigned long.
+ *
+ * @param s the string to convert to unsigned long
+ * @return unsigned long representation of the string
+ */
+unsigned long ulFromString(const std::string& s);
+
 } // namespace asmc
 
 #endif // DATA_MODULE_STRING_UTILS_HPP

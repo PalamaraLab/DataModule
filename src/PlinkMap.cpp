@@ -85,9 +85,9 @@ void PlinkMap::readFile() {
         mPhysicalPositions.emplace_back(ulFromString(line.at(physCol)));
       } catch (const std::runtime_error& e) {
         gzclose(gzFile);
-        throw std::runtime_error(
-            fmt::format("Error: PLINK map file {} line {} column {}: expected unsigned integer but got {}\n",
-                        mInputFile.string(), 1ul + mPhysicalPositions.size(), 1ul + physCol, line.at(physCol)));
+        throw std::runtime_error(fmt::format(
+            "Error: PLINK map file {} line {} column {}: expected unsigned integer but got {}\n{}\n",
+            mInputFile.string(), 1ul + mPhysicalPositions.size(), 1ul + physCol, line.at(physCol), e.what()));
       }
     }
   }

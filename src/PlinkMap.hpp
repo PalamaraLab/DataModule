@@ -21,21 +21,39 @@ namespace fs = std::filesystem;
 class PlinkMap {
 
 private:
+
+  /** Path to the input file */
   fs::path mInputFile;
+
+  /** Number of sites/SNPs (#rows in the map file) */
   unsigned long mNumSites{};
+
+  /** Number of columns in the map file: a valid map can contain either 3 or 4 */
   unsigned long mNumCols{};
+
+  /** The chromosome IDs in the map. These need not necessarily be numeric IDs */
   std::vector<std::string> mChrIds;
+
+  /** The site/SNP IDs. These are string variables */
   std::vector<std::string> mSnpIds;
+
+  /** The genetic positions in the map. These are either in Morgans or Centimorgans, but are optional in the file */
   std::vector<double> mGeneticPositions;
+
+  /** The physical positions */
   std::vector<unsigned long> mPhysicalPositions;
 
   /**
-   *
+   * Check that:
+   * - the file exists
+   * - the first row contains either 3 or four tab-separated columns
+   * and count the number of rows in the file
    */
   void validateFile();
 
   /**
-   *
+   * Read each line into the relevant vectors, checking each line has the same number of columns and that the column
+   * containing physical positions contains positive integer values.
    */
   void readFile();
 

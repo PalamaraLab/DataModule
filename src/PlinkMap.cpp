@@ -30,6 +30,7 @@ void PlinkMap::validateFile() {
   mNumCols = static_cast<unsigned long>(firstLine.size());
 
   if (!(mNumCols == 3ul || mNumCols == 4ul)) {
+    gzclose(gzFile);
     throw std::runtime_error(
         fmt::format("Error: PLINK map file {} should contain either 3 or 4 tab-separated columns, but contains {}\n",
                     mInputFile.string(), mNumCols));
@@ -68,6 +69,7 @@ void PlinkMap::readFile() {
     if (!line.empty()) {
 
       if (line.size() != mNumCols) {
+        gzclose(gzFile);
         throw std::runtime_error(
             fmt::format("Error: PLINK map file {} line {} contains {} columns, but line 1 contains {} columns\n",
                         mInputFile.string(), 1ul + mChrIds.size(), line.size(), mNumCols));

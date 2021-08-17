@@ -42,7 +42,7 @@ TEST_CASE("GeneticMap: test exceptions", "[GeneticMap]") {
   CHECK_THROWS_WITH(GeneticMap(geneticPositions), Catch::Contains("genetic positions are not strictly increasing"));
 }
 
-TEST_CASE("GeneticMap: test good maps", "[PlinkMap]") {
+TEST_CASE("GeneticMap: test good maps", "[GeneticMap]") {
 
   SECTION("3 column map without header") {
     std::string mapFile = DATA_MODULE_TEST_DIR "/data/genetic_map/3_col.map";
@@ -87,6 +87,15 @@ TEST_CASE("GeneticMap: test good maps", "[PlinkMap]") {
     CHECK(map.getGeneticPositions() == std::vector<double>{0.22, 0.30, 0.31, 0.32, 0.45});
     CHECK(map.getPhysicalPositions() == std::vector<unsigned long>{58ul, 82ul, 85ul, 88ul, 110ul});
   }
+}
+
+TEST_CASE("GeneticMap: disambiguate from PLINK map", "[GeneticMap]") {
+
+  std::string plinkMap3Col = DATA_MODULE_TEST_DIR "/data/plink_map/4_col.map";
+  std::string plinkMap4Col = DATA_MODULE_TEST_DIR "/data/plink_map/3_col.map";
+
+  CHECK_THROWS_WITH(GeneticMap(plinkMap3Col), Catch::Contains("physical positions are not strictly increasing"));
+  CHECK_THROWS_WITH(GeneticMap(plinkMap4Col), Catch::Contains("should contain at least one data row with at least 3"));
 }
 
 } // namespace asmc

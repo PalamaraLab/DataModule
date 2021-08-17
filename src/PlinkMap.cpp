@@ -72,7 +72,14 @@ void PlinkMap::readFile() {
       mChrIds.emplace_back(line.at(chrCol));
       mSnpIds.emplace_back(line.at(snpCol));
       if (mNumCols == 4ul) {
-        mGeneticPositions.emplace_back(std::stod(line.at(genCol)));
+        try {
+          mGeneticPositions.emplace_back(dblFromString(line.at(genCol)));
+        } catch (const std::runtime_error& e) {
+          gzclose(gzFile);
+          throw std::runtime_error(fmt::format(
+              "Error: PLINK map file {} line {} column {}: expected floating point but got {}\n{}\n",
+              mInputFile.string(), 1ul + mGeneticPositions.size(), 1ul + genCol, line.at(physCol), e.what()));
+        }
       }
 
       try {

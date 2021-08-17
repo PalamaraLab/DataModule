@@ -34,13 +34,13 @@ unsigned long ulFromString(const std::string& s) {
 
   try {
     ld = std::stold(s);
-  } catch (const std::exception& e) {
+  } catch (const std::exception&) {
     valid = false;
   }
 
   try {
     ul = std::stoul(s);
-  } catch (const std::exception& e) {
+  } catch (const std::exception&) {
     valid = false;
   }
 
@@ -54,7 +54,7 @@ unsigned long ulFromString(const std::string& s) {
 double dblFromString(const std::string& s) {
   try {
     return static_cast<double>(std::stold(s));
-  } catch (const std::exception& e) {
+  } catch (const std::exception&) {
     throw std::runtime_error(fmt::format("String {} not representable as a double\n", s));
   }
 }

@@ -29,7 +29,7 @@ std::string readNextLineFromGzip(gzFile& gzFileHandle) {
 }
 
 unsigned long countLinesInFile(const fs::path& filePath) {
-  auto gzFile = gzopen(filePath.c_str(), "r");
+  auto gzFile = gzopen(filePath.string().c_str(), "r");
 
   unsigned long numLines = 0ul;
   while (!gzeof(gzFile)) {

@@ -63,8 +63,8 @@ void GeneticMap::validateFile() {
                                          mInputFile.string(), fmt::join(firstLines.begin(), firstLines.end(), "\n")));
   }
 
-  mNumCols = validLines.at(0) ? splitTextByDelimiter(firstLines.at(0), "\t").size()
-                              : splitTextByDelimiter(firstLines.at(1), "\t").size();
+  mNumCols = static_cast<unsigned long>(validLines.at(0) ? splitTextByDelimiter(firstLines.at(0), "\t").size()
+                                                         : splitTextByDelimiter(firstLines.at(1), "\t").size());
 
   mNumSites = countLinesInFile(mInputFile);
   if (mHasHeader) {
@@ -88,14 +88,14 @@ bool GeneticMap::validDataRow(const std::string& row) {
   // the first column of a valid row contains an unsigned integer (physical position)
   try {
     ulFromString(rowParts.front());
-  } catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error&) {
     return false;
   }
 
   // the third column of a valid row contains a floating point value (genetic position)
   try {
     dblFromString(rowParts.at(2ul));
-  } catch (const std::runtime_error& e) {
+  } catch (const std::runtime_error&) {
     return false;
   }
 
@@ -128,7 +128,7 @@ void GeneticMap::readFile() {
       try {
         mPhysicalPositions.emplace_back(ulFromString(line.at(0ul)));
         mGeneticPositions.emplace_back(dblFromString(line.at(2ul)));
-      } catch (const std::runtime_error& e) {
+      } catch (const std::runtime_error&) {
         gzclose(gzFile);
         throw std::runtime_error(fmt::format(
             "Error: Genetic map file {} line {} should contain an unsigned integer physical position in the first "

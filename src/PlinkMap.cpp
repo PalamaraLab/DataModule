@@ -5,6 +5,7 @@
 
 #include "utils/FileUtils.hpp"
 #include "utils/StringUtils.hpp"
+#include "utils/VectorUtils.hpp"
 
 #include <exception>
 
@@ -15,6 +16,7 @@ namespace asmc {
 PlinkMap::PlinkMap(std::string_view mapFile) : mInputFile{mapFile} {
   validateFile();
   readFile();
+  validateMap();
 }
 
 void PlinkMap::validateFile() {
@@ -86,21 +88,38 @@ void PlinkMap::readFile() {
 
   gzclose(gzFile);
 }
+
+void PlinkMap::validateMap() {
+  if (!isStrictlyIncreasing(mPhysicalPositions)) {
+    throw std::runtime_error(
+        fmt::format("Error: PLINK map file {} physical positions are not strictly increasing\n", mInputFile.string()));
+  }
+  if (!isStrictlyIncreasing(mGeneticPositions)) {
+    throw std::runtime_error(
+        fmt::format("Error: PLINK map file {} genetic positions are not strictly increasing\n", mInputFile.string()));
+  }
+}
+
 unsigned long PlinkMap::getNumSites() const {
   return mNumSites;
 }
+
 unsigned long PlinkMap::getNumCols() const {
   return mNumCols;
 }
+
 const std::vector<std::string>& PlinkMap::getChrIds() const {
   return mChrIds;
 }
+
 const std::vector<std::string>& PlinkMap::getSnpIds() const {
   return mSnpIds;
 }
+
 const std::vector<double>& PlinkMap::getGeneticPositions() const {
   return mGeneticPositions;
 }
+
 const std::vector<unsigned long>& PlinkMap::getPhysicalPositions() const {
   return mPhysicalPositions;
 }

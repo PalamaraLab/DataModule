@@ -34,6 +34,12 @@ TEST_CASE("GeneticMap: test exceptions", "[GeneticMap]") {
   std::string badCol3 = DATA_MODULE_TEST_DIR "/data/genetic_map/bad_genetic_pos.map";
   CHECK_THROWS_WITH(GeneticMap(badCol1), Catch::Contains("line 3 should contain an unsigned integer"));
   CHECK_THROWS_WITH(GeneticMap(badCol3), Catch::Contains("line 4 should contain an unsigned integer"));
+
+  // All genetic positions and physical positions must be strictly increasing
+  std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/genetic_map/physical_positions.map";
+  std::string geneticPositions = DATA_MODULE_TEST_DIR "/data/genetic_map/genetic_positions.map";
+  CHECK_THROWS_WITH(GeneticMap(physicalPositions), Catch::Contains("physical positions are not strictly increasing"));
+  CHECK_THROWS_WITH(GeneticMap(geneticPositions), Catch::Contains("genetic positions are not strictly increasing"));
 }
 
 TEST_CASE("GeneticMap: test good maps", "[PlinkMap]") {

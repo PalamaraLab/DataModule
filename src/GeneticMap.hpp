@@ -65,6 +65,12 @@ private:
    */
   void readFile();
 
+  /**
+   * Once the map has been read from file, validate that the genetic and physical positions are strictly increasing.
+   * A runtime error will be thrown if this is not the case.
+   */
+  void validateMap();
+
 public:
   /**
    * Read a genetic .map file: a tab-separated text file with or without a header header row, and one line per variant

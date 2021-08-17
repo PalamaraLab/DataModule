@@ -5,6 +5,7 @@
 
 #include "utils/FileUtils.hpp"
 #include "utils/StringUtils.hpp"
+#include "utils/VectorUtils.hpp"
 
 #include <exception>
 
@@ -15,6 +16,7 @@ namespace asmc {
 GeneticMap::GeneticMap(std::string_view mapFile) : mInputFile{mapFile} {
   validateFile();
   readFile();
+  validateMap();
 }
 
 void GeneticMap::validateFile() {
@@ -46,12 +48,12 @@ void GeneticMap::validateFile() {
   bool validFile = false;
   bool potentialHeader = !validLines.at(0) && !firstLines.at(0).empty();
 
-  if (validLines.at(0) && validLines.at(1)) {  // both lines valid
+  if (validLines.at(0) && validLines.at(1)) { // both lines valid
     validFile = true;
-  } else if (potentialHeader && validLines.at(1)) {  // potential header followed by valid row
+  } else if (potentialHeader && validLines.at(1)) { // potential header followed by valid row
     mHasHeader = true;
     validFile = true;
-  } else if (validLines.at(0) && !validLines.at(1)) {  // only one line that's valid, or valid followed by empty
+  } else if (validLines.at(0) && !validLines.at(1)) { // only one line that's valid, or valid followed by empty
     validFile = firstLines.size() == 1ul || (firstLines.size() == 2ul && firstLines.back().empty());
   }
 
@@ -65,7 +67,7 @@ void GeneticMap::validateFile() {
                               : splitTextByDelimiter(firstLines.at(1), "\t").size();
 
   mNumSites = countLinesInFile(mInputFile);
-  if(mHasHeader) {
+  if (mHasHeader) {
     mNumSites -= 1ul;
   }
 }
@@ -73,13 +75,13 @@ void GeneticMap::validateFile() {
 bool GeneticMap::validDataRow(const std::string& row) {
 
   // an empty row isn't valid
-  if(row.empty()) {
+  if (row.empty()) {
     return false;
   }
 
   // a row must contain at least 3 tab-separated values
   std::vector<std::string> rowParts = splitTextByDelimiter(row, "\t");
-  if(rowParts.size() < 3ul) {
+  if (rowParts.size() < 3ul) {
     return false;
   }
 
@@ -137,6 +139,17 @@ void GeneticMap::readFile() {
   }
 
   gzclose(gzFile);
+}
+
+void GeneticMap::validateMap() {
+  if (!isStrictlyIncreasing(mPhysicalPositions)) {
+    throw std::runtime_error(fmt::format("Error: genetic map file {} physical positions are not strictly increasing\n",
+                                         mInputFile.string()));
+  }
+  if (!isStrictlyIncreasing(mGeneticPositions)) {
+    throw std::runtime_error(
+        fmt::format("Error: genetic map file {} genetic positions are not strictly increasing\n", mInputFile.string()));
+  }
 }
 
 unsigned long GeneticMap::getNumSites() const {

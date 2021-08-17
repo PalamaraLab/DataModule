@@ -30,6 +30,12 @@ TEST_CASE("PlinkMap: test exceptions", "[PlinkMap]") {
   // All genetic positions must be unsigned integers
   std::string noUnsigned = DATA_MODULE_TEST_DIR "/data/plink_map/no_unsigned.map";
   CHECK_THROWS_WITH(PlinkMap(noUnsigned), Catch::Contains("line 2 column 4: expected unsigned integer but got"));
+
+  // All genetic positions and physical positions must be strictly increasing
+  std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/plink_map/physical_positions.map";
+  std::string geneticPositions = DATA_MODULE_TEST_DIR "/data/plink_map/genetic_positions.map";
+  CHECK_THROWS_WITH(PlinkMap(physicalPositions), Catch::Contains("physical positions are not strictly increasing"));
+  CHECK_THROWS_WITH(PlinkMap(geneticPositions), Catch::Contains("genetic positions are not strictly increasing"));
 }
 
 TEST_CASE("PlinkMap: test good maps", "[PlinkMap]") {

@@ -1,8 +1,8 @@
 // This file is part of https://github.com/PalamaraLab/DataModule which is released under the GPL-3.0 license.
 // See accompanying LICENSE and COPYING for copyright notice and full details.
 
-#ifndef DATA_MODULE_PLINK_MAP_HPP
-#define DATA_MODULE_PLINK_MAP_HPP
+#ifndef DATA_MODULE_GENETIC_MAP_HPP
+#define DATA_MODULE_GENETIC_MAP_HPP
 
 #include <filesystem>
 #include <string>
@@ -88,4 +88,4 @@ public:
 
 } // namespace asmc
 
-#endif // DATA_MODULE_PLINK_MAP_HPP
+#endif // DATA_MODULE_GENETIC_MAP_HPP

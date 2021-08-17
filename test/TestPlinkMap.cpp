@@ -30,11 +30,17 @@ TEST_CASE("PlinkMap: test exceptions", "[PlinkMap]") {
   // All genetic positions must be unsigned integers
   std::string noUnsigned = DATA_MODULE_TEST_DIR "/data/plink_map/no_unsigned.map";
   CHECK_THROWS_WITH(PlinkMap(noUnsigned), Catch::Contains("line 2 column 4: expected unsigned integer but got"));
+
+  // All genetic positions and physical positions must be strictly increasing
+  std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/plink_map/physical_positions.map";
+  std::string geneticPositions = DATA_MODULE_TEST_DIR "/data/plink_map/genetic_positions.map";
+  CHECK_THROWS_WITH(PlinkMap(physicalPositions), Catch::Contains("physical positions are not strictly increasing"));
+  CHECK_THROWS_WITH(PlinkMap(geneticPositions), Catch::Contains("genetic positions are not strictly increasing"));
 }
 
 TEST_CASE("PlinkMap: test good maps", "[PlinkMap]") {
 
-  SECTION("3 column map"){
+  SECTION("3 column map") {
     std::string mapFile = DATA_MODULE_TEST_DIR "/data/plink_map/3_col.map";
     PlinkMap map{mapFile};
 
@@ -46,7 +52,7 @@ TEST_CASE("PlinkMap: test good maps", "[PlinkMap]") {
     CHECK(map.getPhysicalPositions() == std::vector<unsigned long>{123ul, 234ul, 345ul, 456ul, 567ul});
   }
 
-  SECTION("4 column map"){
+  SECTION("4 column map") {
     std::string mapFile = DATA_MODULE_TEST_DIR "/data/plink_map/4_col.map";
     PlinkMap map{mapFile};
 
@@ -57,6 +63,17 @@ TEST_CASE("PlinkMap: test good maps", "[PlinkMap]") {
     CHECK(map.getGeneticPositions() == std::vector<double>{0.1, 0.2, 0.3});
     CHECK(map.getPhysicalPositions() == std::vector<unsigned long>{1234ul, 2345ul, 3456ul});
   }
+}
+
+TEST_CASE("PlinkMap: disambiguate from genetic map", "[PlinkMap]") {
+
+  std::string geneticMapWithoutHeader4 = DATA_MODULE_TEST_DIR "/data/genetic_map/4_col.map";
+  std::string geneticMapWithoutHeader3 = DATA_MODULE_TEST_DIR "/data/genetic_map/3_col.map";
+  std::string geneticMapWithHeader4 = DATA_MODULE_TEST_DIR "/data/genetic_map/4_col_header.map";
+
+  CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader4), Catch::Contains("column 4: expected unsigned integer"));
+  CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader3), Catch::Contains("column 3: expected unsigned integer"));
+  CHECK_THROWS_WITH(PlinkMap(geneticMapWithHeader4), Catch::Contains("expected floating point but got"));
 }
 
 } // namespace asmc

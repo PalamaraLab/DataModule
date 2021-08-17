@@ -27,14 +27,36 @@ std::string stripBack(std::string s) {
 }
 
 unsigned long ulFromString(const std::string& s) {
-  long double ld = std::stold(s);
-  unsigned long ul = std::stoul(s);
 
-  if (static_cast<long double>(ul) != ld) {
+  bool valid = true;
+  long double ld{};
+  unsigned long ul{};
+
+  try {
+    ld = std::stold(s);
+  } catch (const std::exception&) {
+    valid = false;
+  }
+
+  try {
+    ul = std::stoul(s);
+  } catch (const std::exception&) {
+    valid = false;
+  }
+
+  if (!valid || static_cast<long double>(ul) != ld) {
     throw std::runtime_error(fmt::format("String {} not representable as an unsigned integer\n", s));
   }
 
   return ul;
+}
+
+double dblFromString(const std::string& s) {
+  try {
+    return static_cast<double>(std::stold(s));
+  } catch (const std::exception&) {
+    throw std::runtime_error(fmt::format("String {} not representable as a double\n", s));
+  }
 }
 
 } // namespace asmc

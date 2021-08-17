@@ -13,10 +13,12 @@ add_definitions(-DDATA_MODULE_TEST_DIR=\"${CMAKE_CURRENT_LIST_DIR}\")
 set(
         test_src
         TestBedMatrixType.cpp
-        TestPlinkMap.cpp
+        TestGeneticMap.cpp
         TestHapsMatrixType.cpp
+        TestPlinkMap.cpp
         utils/TestFileUtils.cpp
         utils/TestStringUtils.cpp
+        utils/TestVectorUtils.cpp
 )
 
 add_executable(unit_tests ${test_src})

@@ -5,6 +5,7 @@
 
 #include "utils/FileUtils.hpp"
 #include "utils/StringUtils.hpp"
+#include "utils/VectorUtils.hpp"
 
 #include <exception>
 
@@ -15,6 +16,7 @@ namespace asmc {
 PlinkMap::PlinkMap(std::string_view mapFile) : mInputFile{mapFile} {
   validateFile();
   readFile();
+  validateMap();
 }
 
 void PlinkMap::validateFile() {
@@ -28,24 +30,16 @@ void PlinkMap::validateFile() {
   auto gzFile = gzopen(mInputFile.string().c_str(), "r");
   std::vector<std::string> firstLine = splitTextByDelimiter(readNextLineFromGzip(gzFile), "\t");
   mNumCols = static_cast<unsigned long>(firstLine.size());
+  gzclose(gzFile);
 
   if (!(mNumCols == 3ul || mNumCols == 4ul)) {
-    gzclose(gzFile);
     throw std::runtime_error(
         fmt::format("Error: PLINK map file {} should contain either 3 or 4 tab-separated columns, but contains {}\n",
                     mInputFile.string(), mNumCols));
   }
 
   // Count the number of lines in the file
-  mNumSites = 1ul;
-  while (!gzeof(gzFile)) {
-    std::string line = readNextLineFromGzip(gzFile);
-    if (!stripBack(line).empty()) {
-      mNumSites++;
-    }
-  }
-
-  gzclose(gzFile);
+  mNumSites = countLinesInFile(mInputFile);
 }
 
 void PlinkMap::readFile() {
@@ -78,7 +72,14 @@ void PlinkMap::readFile() {
       mChrIds.emplace_back(line.at(chrCol));
       mSnpIds.emplace_back(line.at(snpCol));
       if (mNumCols == 4ul) {
-        mGeneticPositions.emplace_back(std::stod(line.at(genCol)));
+        try {
+          mGeneticPositions.emplace_back(dblFromString(line.at(genCol)));
+        } catch (const std::runtime_error& e) {
+          gzclose(gzFile);
+          throw std::runtime_error(fmt::format(
+              "Error: PLINK map file {} line {} column {}: expected floating point but got {}\n{}\n",
+              mInputFile.string(), 1ul + mGeneticPositions.size(), 1ul + genCol, line.at(physCol), e.what()));
+        }
       }
 
       try {
@@ -94,21 +95,38 @@ void PlinkMap::readFile() {
 
   gzclose(gzFile);
 }
+
+void PlinkMap::validateMap() {
+  if (!isStrictlyIncreasing(mPhysicalPositions)) {
+    throw std::runtime_error(
+        fmt::format("Error: PLINK map file {} physical positions are not strictly increasing\n", mInputFile.string()));
+  }
+  if (!isStrictlyIncreasing(mGeneticPositions)) {
+    throw std::runtime_error(
+        fmt::format("Error: PLINK map file {} genetic positions are not strictly increasing\n", mInputFile.string()));
+  }
+}
+
 unsigned long PlinkMap::getNumSites() const {
   return mNumSites;
 }
+
 unsigned long PlinkMap::getNumCols() const {
   return mNumCols;
 }
+
 const std::vector<std::string>& PlinkMap::getChrIds() const {
   return mChrIds;
 }
+
 const std::vector<std::string>& PlinkMap::getSnpIds() const {
   return mSnpIds;
 }
+
 const std::vector<double>& PlinkMap::getGeneticPositions() const {
   return mGeneticPositions;
 }
+
 const std::vector<unsigned long>& PlinkMap::getPhysicalPositions() const {
   return mPhysicalPositions;
 }

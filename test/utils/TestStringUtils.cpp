@@ -76,6 +76,14 @@ TEST_CASE("utils/StringUtils: test ulFromString", "[utils/StringUtils]") {
 
   CHECK_THROWS_WITH(ulFromString("1.23"), Catch::Contains("not representable as an unsigned integer"));
   CHECK_THROWS_WITH(ulFromString("-7"), Catch::Contains("not representable as an unsigned integer"));
+  CHECK_THROWS_WITH(ulFromString("notanumber"), Catch::Contains("not representable as an unsigned integer"));
+}
+
+TEST_CASE("utils/StringUtils: test dblFromString", "[utils/StringUtils]") {
+  CHECK(dblFromString("1.23") == 1.23);
+  CHECK(dblFromString("-1234") == -1234.0);
+
+  CHECK_THROWS_WITH(dblFromString("notanumber"), Catch::Contains("not representable as a double"));
 }
 
 } // namespace asmc

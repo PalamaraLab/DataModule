@@ -18,6 +18,7 @@ set(
         TestPlinkMap.cpp
         utils/TestFileUtils.cpp
         utils/TestStringUtils.cpp
+        utils/TestVectorUtils.cpp
 )
 
 add_executable(unit_tests ${test_src})

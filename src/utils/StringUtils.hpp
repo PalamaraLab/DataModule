@@ -36,6 +36,14 @@ std::string stripBack(std::string s);
  */
 unsigned long ulFromString(const std::string& s);
 
+/**
+ * Convert a string to double. A std::runtime_error will be thrown if the string is not representable as a double.
+ *
+ * @param s the string to convert to double
+ * @return double representation of the string
+ */
+double dblFromString(const std::string& s);
+
 } // namespace asmc
 
 #endif // DATA_MODULE_STRING_UTILS_HPP

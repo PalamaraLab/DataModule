@@ -17,7 +17,7 @@ namespace asmc {
  * @return whether the vector is strictly increasing
  */
 template <typename T> bool isStrictlyIncreasing(std::vector<T> vec) {
-  return std::is_sorted(vec.begin(), vec.end(), [](const T& a, const T& b) { return a <= b; });
+  return std::adjacent_find(vec.begin(), vec.end(), std::greater_equal<T>()) == vec.end();
 }
 
 } // namespace asmc

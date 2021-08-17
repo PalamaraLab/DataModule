@@ -28,24 +28,16 @@ void PlinkMap::validateFile() {
   auto gzFile = gzopen(mInputFile.string().c_str(), "r");
   std::vector<std::string> firstLine = splitTextByDelimiter(readNextLineFromGzip(gzFile), "\t");
   mNumCols = static_cast<unsigned long>(firstLine.size());
+  gzclose(gzFile);
 
   if (!(mNumCols == 3ul || mNumCols == 4ul)) {
-    gzclose(gzFile);
     throw std::runtime_error(
         fmt::format("Error: PLINK map file {} should contain either 3 or 4 tab-separated columns, but contains {}\n",
                     mInputFile.string(), mNumCols));
   }
 
   // Count the number of lines in the file
-  mNumSites = 1ul;
-  while (!gzeof(gzFile)) {
-    std::string line = readNextLineFromGzip(gzFile);
-    if (!stripBack(line).empty()) {
-      mNumSites++;
-    }
-  }
-
-  gzclose(gzFile);
+  mNumSites = countLinesInFile(mInputFile);
 }
 
 void PlinkMap::readFile() {

@@ -57,13 +57,17 @@ void GeneticMap::validateFile() {
 
   if (!validFile) {
     throw std::runtime_error(fmt::format("Error: genetic map file {} should contain at least one data row with at "
-                                         "least 3 tab-separated columns, but contains {}\n",
+                                         "least 3 tab-separated columns, but contains\n{}\n",
                                          mInputFile.string(), fmt::join(firstLines.begin(), firstLines.end(), "\n")));
   }
 
   mNumCols = validLines.at(0) ? splitTextByDelimiter(firstLines.at(0), "\t").size()
                               : splitTextByDelimiter(firstLines.at(1), "\t").size();
+
   mNumSites = countLinesInFile(mInputFile);
+  if(mHasHeader) {
+    mNumSites -= 1ul;
+  }
 }
 
 bool GeneticMap::validDataRow(const std::string& row) {
@@ -149,6 +153,10 @@ const std::vector<double>& GeneticMap::getGeneticPositions() const {
 
 const std::vector<unsigned long>& GeneticMap::getPhysicalPositions() const {
   return mPhysicalPositions;
+}
+
+unsigned long GeneticMap::hasHeader() const {
+  return mHasHeader;
 }
 
 } // namespace asmc

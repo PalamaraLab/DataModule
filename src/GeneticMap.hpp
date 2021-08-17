@@ -81,6 +81,7 @@ public:
 
   [[nodiscard]] unsigned long getNumSites() const;
   [[nodiscard]] unsigned long getNumCols() const;
+  [[nodiscard]] unsigned long hasHeader() const;
   [[nodiscard]] const std::vector<double>& getGeneticPositions() const;
   [[nodiscard]] const std::vector<unsigned long>& getPhysicalPositions() const;
 };

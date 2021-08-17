@@ -28,4 +28,20 @@ std::string readNextLineFromGzip(gzFile& gzFileHandle) {
   return stripBack(line);
 }
 
+unsigned long countLinesInFile(const fs::path& filePath) {
+  auto gzFile = gzopen(filePath.c_str(), "r");
+
+  unsigned long numLines = 0ul;
+  while (!gzeof(gzFile)) {
+    std::string line = readNextLineFromGzip(gzFile);
+    if (!line.empty()) {
+      numLines++;
+    }
+  }
+
+  gzclose(gzFile);
+
+  return numLines;
+}
+
 } // namespace asmc

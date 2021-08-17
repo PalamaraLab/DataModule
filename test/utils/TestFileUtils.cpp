@@ -150,4 +150,21 @@ TEST_CASE("utils/FileUtils: read gz lines with miscellaneous checks", "[utils/Fi
   }
 }
 
+TEST_CASE("utils/FileUtils: countLinesInFile", "[utils/FileUtils]") {
+
+  SECTION("No non-empty lines in these files")
+  {
+    CHECK(countLinesInFile(DATA_MODULE_TEST_DIR "/data/util/empty_file.gz") == 0ul);
+    CHECK(countLinesInFile(DATA_MODULE_TEST_DIR "/data/util/only_newline_characters.gz") == 0ul);
+  }
+
+  SECTION("Three-line file with/without newline at end")
+  {
+    CHECK(countLinesInFile(DATA_MODULE_TEST_DIR "/data/util/newline_at_end.gz") == 3ul);
+    CHECK(countLinesInFile(DATA_MODULE_TEST_DIR "/data/util/no_newline_at_end.gz") == 3ul);
+  }
+}
+
+
+
 } // namespace asmc

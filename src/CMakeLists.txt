@@ -19,6 +19,7 @@ message(STATUS "Found zlib ${ZLIB_VERSION_STRING}")
 set(
         data_module_src
         BedMatrixType.cpp
+        GeneticMap.cpp
         HapsMatrixType.cpp
         PlinkMap.cpp
         utils/FileUtils.cpp
@@ -28,6 +29,7 @@ set(
 set(
         data_module_hdr
         BedMatrixType.hpp
+        GeneticMap.hpp
         HapsMatrixType.hpp
         PlinkMap.hpp
         EigenTypes.hpp
@@ -38,6 +40,7 @@ set(
 set(
         data_module_public_hdr
         ${CMAKE_CURRENT_SOURCE_DIR}/BedMatrixType.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/GeneticMap.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/HapsMatrixType.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/PlinkMap.hpp
         ${CMAKE_CURRENT_SOURCE_DIR}/EigenTypes.hpp

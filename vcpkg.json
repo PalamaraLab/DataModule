@@ -9,6 +9,7 @@
     "eigen3",
     "fmt",
     "range-v3",
+    "vcpkg-cmake-config",
     "zlib"
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "asmc-data-module",
-  "version-string": "0.0.1",
+  "version-string": "0.0.2",
   "homepage": "https://github.com/PalamaraLab/DataModule",
   "description": "Common functionality for handling StatGen data.",
   "dependencies": [

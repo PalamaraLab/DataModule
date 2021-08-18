@@ -108,7 +108,7 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="asmc_data_module",
-    version="0.0.1",
+    version="0.0.2",
     author="Palamara Lab",
     description="Something",
     long_description="",

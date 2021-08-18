@@ -8,8 +8,10 @@
 #include "utils/VectorUtils.hpp"
 
 #include <exception>
+#include <iostream>
 
 #include <fmt/core.h>
+#include <fmt/ostream.h>
 
 namespace asmc {
 
@@ -98,12 +100,22 @@ void PlinkMap::readFile() {
 
 void PlinkMap::validateMap() {
   if (!isStrictlyIncreasing(mPhysicalPositions)) {
-    throw std::runtime_error(
-        fmt::format("Error: PLINK map file {} physical positions are not strictly increasing\n", mInputFile.string()));
+    fmt::print(std::cout, "Warning: PLINK map file {} physical positions are not strictly increasing\n", mInputFile.string());
+    for (auto i = 1ul; i < mPhysicalPositions.size(); ++i) {
+      if (mPhysicalPositions[i] <= mPhysicalPositions[i - 1]) {
+        fmt::print(std::cout, "indices {} and {} have consecutive values {} and {}\n", i - 1, i, mPhysicalPositions[i - 1],
+                   mPhysicalPositions[i]);
+      }
+    }
   }
   if (!isIncreasing(mGeneticPositions)) {
-    throw std::runtime_error(
-        fmt::format("Error: PLINK map file {} genetic positions are not increasing\n", mInputFile.string()));
+    fmt::print(std::cout, "Warning: PLINK map file {} genetic positions are not increasing\n", mInputFile.string());
+    for (auto i = 1ul; i < mGeneticPositions.size(); ++i) {
+      if (mGeneticPositions[i] < mGeneticPositions[i - 1]) {
+        fmt::print(std::cout, "indices {} and {} have consecutive values {} and {}\n", i - 1, i, mGeneticPositions[i - 1],
+                   mGeneticPositions[i]);
+      }
+    }
   }
 }
 

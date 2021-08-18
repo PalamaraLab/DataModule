@@ -6,6 +6,8 @@
 #include <catch2/catch.hpp>
 
 #include <cstdint>
+#include <iostream>
+#include <sstream>
 #include <string>
 
 #include <fmt/core.h>
@@ -34,8 +36,22 @@ TEST_CASE("PlinkMap: test exceptions", "[PlinkMap]") {
   // All genetic positions and physical positions must be strictly increasing
   std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/plink_map/physical_positions.map";
   std::string geneticPositions = DATA_MODULE_TEST_DIR "/data/plink_map/genetic_positions.map";
-  CHECK_THROWS_WITH(PlinkMap(physicalPositions), Catch::Contains("physical positions are not strictly increasing"));
-  CHECK_THROWS_WITH(PlinkMap(geneticPositions), Catch::Contains("genetic positions are not increasing"));
+  {
+    std::stringstream buffer;
+    std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+    auto map = PlinkMap(physicalPositions);
+    std::string text = buffer.str();
+    CHECK_THAT(buffer.str(), Catch::Contains("physical positions are not strictly increasing"));
+    std::cout.rdbuf(old);
+  }
+  {
+    std::stringstream buffer;
+    std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+    auto map = PlinkMap(geneticPositions);
+    std::string text = buffer.str();
+    CHECK_THAT(buffer.str(), Catch::Contains("genetic positions are not increasing"));
+    std::cout.rdbuf(old);
+  }
 }
 
 TEST_CASE("PlinkMap: test good maps", "[PlinkMap]") {

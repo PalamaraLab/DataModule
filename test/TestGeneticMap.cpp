@@ -6,6 +6,8 @@
 #include <catch2/catch.hpp>
 
 #include <cstdint>
+#include <iostream>
+#include <sstream>
 #include <string>
 
 #include <fmt/core.h>
@@ -38,8 +40,22 @@ TEST_CASE("GeneticMap: test exceptions", "[GeneticMap]") {
   // All genetic positions and physical positions must be strictly increasing
   std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/genetic_map/physical_positions.map";
   std::string geneticPositions = DATA_MODULE_TEST_DIR "/data/genetic_map/genetic_positions.map";
-  CHECK_THROWS_WITH(GeneticMap(physicalPositions), Catch::Contains("physical positions are not strictly increasing"));
-  CHECK_THROWS_WITH(GeneticMap(geneticPositions), Catch::Contains("genetic positions are not increasing"));
+  {
+    std::stringstream buffer;
+    std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+    auto map = GeneticMap(physicalPositions);
+    std::string text = buffer.str();
+    CHECK_THAT(buffer.str(), Catch::Contains("physical positions are not strictly increasing"));
+    std::cout.rdbuf(old);
+  }
+  {
+    std::stringstream buffer;
+    std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+    auto map = GeneticMap(geneticPositions);
+    std::string text = buffer.str();
+    CHECK_THAT(buffer.str(), Catch::Contains("genetic positions are not increasing"));
+    std::cout.rdbuf(old);
+  }
 }
 
 TEST_CASE("GeneticMap: test good maps", "[GeneticMap]") {
@@ -94,7 +110,15 @@ TEST_CASE("GeneticMap: disambiguate from PLINK map", "[GeneticMap]") {
   std::string plinkMap3Col = DATA_MODULE_TEST_DIR "/data/plink_map/4_col.map";
   std::string plinkMap4Col = DATA_MODULE_TEST_DIR "/data/plink_map/3_col.map";
 
-  CHECK_THROWS_WITH(GeneticMap(plinkMap3Col), Catch::Contains("physical positions are not strictly increasing"));
+  {
+    std::stringstream buffer;
+    std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+    auto map = GeneticMap(plinkMap3Col);
+    std::string text = buffer.str();
+    CHECK_THAT(buffer.str(), Catch::Contains("Warning: genetic map file") && Catch::Contains("indices 0 and 1"));
+    std::cout.rdbuf(old);
+  }
+
   CHECK_THROWS_WITH(GeneticMap(plinkMap4Col), Catch::Contains("should contain at least one data row with at least 3"));
 }
 

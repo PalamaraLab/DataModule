@@ -73,12 +73,12 @@ install(TARGETS data_module_lib project_warnings project_settings pandas_plink_l
 #        NAMESPACE asmc:: FILE AsmcDataModuleConfig.cmake)
 
 install(EXPORT asmc
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AsmcDataModule
-        NAMESPACE AsmcDataModule::
-        FILE AsmcDataModule_Runtime.cmake
-        COMPONENT AsmcDataModule_Runtime
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/asmc-data-module
+        NAMESPACE asmc-data-module::
+        FILE asmc-data-module-runtime.cmake
+        COMPONENT asmc-data-module-runtime
 )
 
-install(FILES cmake/AsmcDataModuleConfig.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/AsmcDataModule
-        )
+install(FILES cmake/asmc-data-module-config.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/asmc-data-module
+)

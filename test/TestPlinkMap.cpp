@@ -35,7 +35,7 @@ TEST_CASE("PlinkMap: test exceptions", "[PlinkMap]") {
   std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/plink_map/physical_positions.map";
   std::string geneticPositions = DATA_MODULE_TEST_DIR "/data/plink_map/genetic_positions.map";
   CHECK_THROWS_WITH(PlinkMap(physicalPositions), Catch::Contains("physical positions are not strictly increasing"));
-  CHECK_THROWS_WITH(PlinkMap(geneticPositions), Catch::Contains("genetic positions are not strictly increasing"));
+  CHECK_THROWS_WITH(PlinkMap(geneticPositions), Catch::Contains("genetic positions are not increasing"));
 }
 
 TEST_CASE("PlinkMap: test good maps", "[PlinkMap]") {

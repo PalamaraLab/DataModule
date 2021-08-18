@@ -146,9 +146,9 @@ void GeneticMap::validateMap() {
     throw std::runtime_error(fmt::format("Error: genetic map file {} physical positions are not strictly increasing\n",
                                          mInputFile.string()));
   }
-  if (!isStrictlyIncreasing(mGeneticPositions)) {
+  if (!isIncreasing(mGeneticPositions)) {
     throw std::runtime_error(
-        fmt::format("Error: genetic map file {} genetic positions are not strictly increasing\n", mInputFile.string()));
+        fmt::format("Error: genetic map file {} genetic positions are not increasing\n", mInputFile.string()));
   }
 }
 

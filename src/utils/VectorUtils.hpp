@@ -20,6 +20,17 @@ template <typename T> bool isStrictlyIncreasing(std::vector<T> vec) {
   return std::adjacent_find(vec.begin(), vec.end(), std::greater_equal<T>()) == vec.end();
 }
 
+/**
+ * Determine whether a vector is increasing.
+ *
+ * @tparam T the type over which the vector is templated
+ * @param vec vector to test for monotonicity
+ * @return whether the vector is increasing
+ */
+template <typename T> bool isIncreasing(std::vector<T> vec) {
+  return std::adjacent_find(vec.begin(), vec.end(), std::greater<T>()) == vec.end();
+}
+
 } // namespace asmc
 
 #endif // DATA_MODULE_VECTOR_UTILS_HPP

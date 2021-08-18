@@ -39,7 +39,7 @@ TEST_CASE("GeneticMap: test exceptions", "[GeneticMap]") {
   std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/genetic_map/physical_positions.map";
   std::string geneticPositions = DATA_MODULE_TEST_DIR "/data/genetic_map/genetic_positions.map";
   CHECK_THROWS_WITH(GeneticMap(physicalPositions), Catch::Contains("physical positions are not strictly increasing"));
-  CHECK_THROWS_WITH(GeneticMap(geneticPositions), Catch::Contains("genetic positions are not strictly increasing"));
+  CHECK_THROWS_WITH(GeneticMap(geneticPositions), Catch::Contains("genetic positions are not increasing"));
 }
 
 TEST_CASE("GeneticMap: test good maps", "[GeneticMap]") {

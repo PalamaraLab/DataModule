@@ -2,7 +2,6 @@ include(CMakeFindDependencyMacro)
 
 find_dependency(Eigen3)
 find_dependency(fmt)
-find_dependency(vcpkg-cmake-config)
 find_dependency(range-v3)
 find_dependency(ZLIB)
 

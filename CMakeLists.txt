@@ -2,7 +2,7 @@
 # See accompanying LICENSE and COPYING for copyright notice and full details.
 
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.15)
 message(STATUS "Using CMake version ${CMAKE_VERSION}")
 include(cmake/AutodetectVcpkgToolchainFile.cmake)
 

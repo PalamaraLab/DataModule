@@ -11,7 +11,6 @@ message(STATUS "Found {fmt} ${fmt_VERSION}")
 
 find_package(range-v3 CONFIG REQUIRED)
 message(STATUS "Found range-v3 ${range-v3_VERSION}")
-#target_link_libraries(main PRIVATE range-v3 range-v3-meta range-v3::meta range-v3-concepts)
 
 find_package(ZLIB REQUIRED)
 message(STATUS "Found zlib ${ZLIB_VERSION_STRING}")
@@ -64,4 +63,11 @@ if (PYTHON_BINDINGS)
     set_target_properties(data_module_lib PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
     pybind11_add_module(asmc_data_module python_bindings/bindings.cpp)
     target_link_libraries(asmc_data_module PRIVATE Eigen3::Eigen fmt::fmt range-v3 ZLIB::ZLIB data_module_lib)
+endif ()
+
+# Link against std filesystem on GCC < 8.4
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 8.4)
+        target_link_libraries(ASMC PRIVATE stdc++fs)
+    endif ()
 endif ()

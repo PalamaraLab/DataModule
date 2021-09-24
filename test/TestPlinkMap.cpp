@@ -75,9 +75,10 @@ TEST_CASE("PlinkMap: test good maps", "[PlinkMap]") {
     CHECK(map.getNumSites() == 3ul);
     CHECK(map.getNumCols() == 4ul);
     CHECK(map.getChrIds() == std::vector<std::string>{"1", "1", "1"});
-    CHECK(map.getSnpIds() == std::vector<std::string>{"SNP_1", "SNP_2", "SNP_3"});
-    CHECK(map.getGeneticPositions() == std::vector<double>{0.1, 0.2, 0.3});
-    CHECK(map.getPhysicalPositions() == std::vector<unsigned long>{1234ul, 2345ul, 3456ul});
+    CHECK(map.getSnpIds() ==
+          std::vector<std::string>{"SNP_29993579_61334", "SNP_29993696_97083", "SNP_29993781_61335"});
+    CHECK(map.getGeneticPositions() == std::vector<double>{0.49943891, 49.94398, 49.944002});
+    CHECK(map.getPhysicalPositions() == std::vector<unsigned long>{29993579ul, 29993696ul, 29993781ul});
   }
 }
 
@@ -90,6 +91,17 @@ TEST_CASE("PlinkMap: disambiguate from genetic map", "[PlinkMap]") {
   CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader4), Catch::Contains("column 4: expected unsigned integer"));
   CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader3), Catch::Contains("column 3: expected unsigned integer"));
   CHECK_THROWS_WITH(PlinkMap(geneticMapWithHeader4), Catch::Contains("expected floating point but got"));
+}
+
+TEST_CASE("PlinkMap: warn on Mbp-cM range", "[PlinkMap]") {
+
+  std::string mapFile = DATA_MODULE_TEST_DIR "/data/plink_map/4_col.map";
+
+  std::stringstream buffer;
+  std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+  auto map = PlinkMap(mapFile);
+  CHECK_THAT(buffer.str(), Catch::Contains("Warning: 33.3% of entries"));
+  std::cout.rdbuf(old);
 }
 
 } // namespace asmc

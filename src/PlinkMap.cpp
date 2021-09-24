@@ -117,6 +117,26 @@ void PlinkMap::validateMap() {
       }
     }
   }
+
+  // Check whether genetic positions are in an appropriate range to be in Centimorgans rather than Morgans.
+  // Should be very roughly 1cM <-> 10^6 base pairs (check 90% are within 0.4 - 2.5 mega base pairs per Centimorgan
+  unsigned long numOutOfRange = 0ul;
+  const double upper = 1e6 / 0.4;
+  const double lower = 1e6 / 2.5;
+  for (auto i = 0ul; i < mGeneticPositions.size(); ++i) {
+    if (upper * mGeneticPositions.at(i) < static_cast<double>(mPhysicalPositions.at(i)) ||
+        lower * mGeneticPositions.at(i) > static_cast<double>(mPhysicalPositions.at(i))) {
+      numOutOfRange++;
+    }
+  }
+  if (const double ratio = static_cast<double>(numOutOfRange) / static_cast<double>(mGeneticPositions.size());
+      ratio > 0.1) {
+    fmt::print(std::cout,
+               "Warning: {:.1f}% of entries in the genetic map file {} are not in the expected range for a human "
+               "genome (0.4-2.5 mega base pairs per Centimorgan). Please check that your map file is providing genetic "
+               "positions in Centimorgans.\n",
+               100.0 * ratio, mInputFile.string());
+  }
 }
 
 unsigned long PlinkMap::getNumSites() const {

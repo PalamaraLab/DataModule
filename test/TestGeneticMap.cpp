@@ -100,8 +100,8 @@ TEST_CASE("GeneticMap: test good maps", "[GeneticMap]") {
     CHECK(map.getNumSites() == 5ul);
     CHECK(map.getNumCols() == 4ul);
     CHECK(map.hasHeader());
-    CHECK(map.getGeneticPositions() == std::vector<double>{0.22, 0.30, 0.31, 0.32, 0.45});
-    CHECK(map.getPhysicalPositions() == std::vector<unsigned long>{58ul, 82ul, 85ul, 88ul, 110ul});
+    CHECK(map.getGeneticPositions() == std::vector<double>{0.0286994674, 0.0877781, 0.0878126, 0.0878132, 0.0878152});
+    CHECK(map.getPhysicalPositions() == std::vector<unsigned long>{138957ul, 139189ul, 140286ul, 140309ul, 140378ul});
   }
 }
 
@@ -114,12 +114,22 @@ TEST_CASE("GeneticMap: disambiguate from PLINK map", "[GeneticMap]") {
     std::stringstream buffer;
     std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
     auto map = GeneticMap(plinkMap3Col);
-    std::string text = buffer.str();
     CHECK_THAT(buffer.str(), Catch::Contains("Warning: genetic map file") && Catch::Contains("indices 0 and 1"));
     std::cout.rdbuf(old);
   }
 
   CHECK_THROWS_WITH(GeneticMap(plinkMap4Col), Catch::Contains("should contain at least one data row with at least 3"));
+}
+
+TEST_CASE("GeneticMap: warn on Mbp-cM range", "[GeneticMap]") {
+
+  std::string mapFile = DATA_MODULE_TEST_DIR "/data/genetic_map/4_col_header.map";
+
+  std::stringstream buffer;
+  std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
+  auto map = GeneticMap(mapFile);
+  CHECK_THAT(buffer.str(), Catch::Contains("Warning: 20.0% of entries"));
+  std::cout.rdbuf(old);
 }
 
 } // namespace asmc

@@ -3,13 +3,16 @@
 
 #include "HapsMatrixType.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <cstdint>
 #include <string>
 
-#include <fmt/core.h>
-#include <fmt/ostream.h>
+using Catch::Approx;
+using Catch::Matchers::StartsWith;
+using Catch::Matchers::ContainsSubstring;
 
 namespace asmc {
 
@@ -25,15 +28,15 @@ TEST_CASE("HapsMatrixType: test createFromHapsPlusSamples", "[HapsMatrixType]") 
 
   // First path is bad
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(badHapsFile, goodSamplesFile, goodMapFile),
-                    Catch::StartsWith("Expected .hap[s][.gz] file, but got "));
+                    StartsWith("Expected .hap[s][.gz] file, but got "));
 
   // Second path is bad
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, badSamplesFile, goodMapFile),
-                    Catch::StartsWith("Expected .sample[s] file, but got "));
+                    StartsWith("Expected .sample[s] file, but got "));
 
   // Third path is bad
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, goodSamplesFile, badMapFile),
-                    Catch::StartsWith("Expected .map file, but got "));
+                    StartsWith("Expected .map file, but got "));
 
   // Constructs fine
   CHECK_NOTHROW(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, goodSamplesFile, goodMapFile));
@@ -93,10 +96,10 @@ TEST_CASE("HapsMatrixType: test readSamplesFile", "[HapsMatrixType]") {
   std::string badSamples2 = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/bad_header_2.samples";
 
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, badSamples1, goodMapFile),
-                    Catch::StartsWith("Expected fist row of .samples file "));
+                    StartsWith("Expected fist row of .samples file "));
 
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(goodHapsFile, badSamples2, goodMapFile),
-                    Catch::StartsWith("Expected second row of .samples file "));
+                    StartsWith("Expected second row of .samples file "));
 }
 
 TEST_CASE("HapsMatrixType: test readHapsFile", "[HapsMatrixType]") {
@@ -109,11 +112,11 @@ TEST_CASE("HapsMatrixType: test readHapsFile", "[HapsMatrixType]") {
   std::string goodSamplesFile = DATA_MODULE_TEST_DIR "/data/haps_plus_samples/test.samples";
 
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(hapsTooFewRows, goodSamplesFile, goodMapFile),
-                    Catch::StartsWith("Error on line 3 of"));
+                    StartsWith("Error on line 3 of"));
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(hapsTooManyRows, goodSamplesFile, goodMapFile),
-                    Catch::Contains("to contain 4 lines, but found 5"));
+                    ContainsSubstring("to contain 4 lines, but found 5"));
   CHECK_THROWS_WITH(HapsMatrixType::createFromHapsPlusSamples(hapsNotBoolean, goodSamplesFile, goodMapFile),
-                    Catch::Contains("but column 9 was \"invalid\""));
+                    ContainsSubstring("but column 9 was \"invalid\""));
 }
 
 TEST_CASE("HapsMatrixType: test (small) real example", "[HapsMatrixType]") {

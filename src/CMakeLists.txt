@@ -35,7 +35,7 @@ set(
         utils/FileUtils.hpp
         utils/StringUtils.hpp
         utils/VectorUtils.hpp
-)
+        PbwtSandpit.hpp)
 
 set(
         data_module_public_hdr

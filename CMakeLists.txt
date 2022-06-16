@@ -32,12 +32,19 @@ include(cmake/StaticAnalysers.cmake)
 option(BUILD_SHARED_LIBS "Enable compilation of shared libraries" OFF)
 option(ENABLE_TESTING "Enable Test Builds" ON)
 
-option(PYTHON_BINDINGS "Whether to build the python bindings" OFF)
-if (EXISTS ${CMAKE_SOURCE_DIR}/pybind11/LICENSE)
-    set(PYTHON_BINDINGS ON)
-endif()
+option(PYTHON_BINDINGS "Whether to build the python bindings" ON)
 if (PYTHON_BINDINGS)
-    add_subdirectory(pybind11)
+    include(FetchContent)
+    FetchContent_Declare(
+            pybind11
+            GIT_REPOSITORY https://github.com/pybind/pybind11
+            GIT_TAG 914c06fb252b6cc3727d0eedab6736e88a3fcb01 # Version 2.9.2
+    )
+    FetchContent_GetProperties(pybind11)
+    if (NOT pybind11_POPULATED)
+        FetchContent_Populate(pybind11)
+        add_subdirectory(${pybind11_SOURCE_DIR} ${pybind11_BINARY_DIR})
+    endif ()
 endif ()
 
 add_subdirectory(src)

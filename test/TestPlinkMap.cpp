@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include <fmt/core.h>
 

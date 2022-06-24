@@ -31,7 +31,7 @@ set(
 )
 
 add_executable(unit_tests ${test_src})
-target_link_libraries(unit_tests PUBLIC data_module_lib project_warnings project_settings Eigen3::Eigen fmt::fmt Catch2::Catch2WithMain)
+target_link_libraries(unit_tests PRIVATE data_module_lib project_warnings project_settings Eigen3::Eigen fmt::fmt Catch2::Catch2WithMain)
 
 # automatically discover tests
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)

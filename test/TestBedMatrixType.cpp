@@ -3,7 +3,8 @@
 
 #include "BedMatrixType.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 
 #include <cstdint>
 #include <string>
@@ -11,6 +12,8 @@
 #include <fmt/core.h>
 #include <fmt/ostream.h>
 #include <fmt/ranges.h>
+
+using Catch::Approx;
 
 namespace asmc {
 

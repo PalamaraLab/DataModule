@@ -3,14 +3,19 @@
 
 #include "PlinkMap.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <cstdint>
 #include <iostream>
-#include <sstream>
 #include <string>
+#include <sstream>
 
 #include <fmt/core.h>
+
+using Catch::Matchers::ContainsSubstring;
+using Catch::Matchers::EndsWith;
+using Catch::Matchers::StartsWith;
 
 namespace asmc {
 
@@ -18,20 +23,20 @@ TEST_CASE("PlinkMap: test exceptions", "[PlinkMap]") {
 
   // Map file does not exist
   std::string nonexistentFile = DATA_MODULE_TEST_DIR "/does/not/exist.map";
-  CHECK_THROWS_WITH(PlinkMap(nonexistentFile), Catch::StartsWith("Error: PLINK map file"));
-  CHECK_THROWS_WITH(PlinkMap(nonexistentFile), Catch::EndsWith("does not exist\n"));
+  CHECK_THROWS_WITH(PlinkMap(nonexistentFile), StartsWith("Error: PLINK map file"));
+  CHECK_THROWS_WITH(PlinkMap(nonexistentFile), EndsWith("does not exist\n"));
 
   // Map file is not tab-separated
   std::string spaceSepFile = DATA_MODULE_TEST_DIR "/data/plink_map/spaces.map";
-  CHECK_THROWS_WITH(PlinkMap(spaceSepFile), Catch::Contains("should contain either 3 or 4 tab-separated columns"));
+  CHECK_THROWS_WITH(PlinkMap(spaceSepFile), ContainsSubstring("should contain either 3 or 4 tab-separated columns"));
 
   // Map file contains too many columns
   std::string fiveCols = DATA_MODULE_TEST_DIR "/data/plink_map/five_cols.map";
-  CHECK_THROWS_WITH(PlinkMap(fiveCols), Catch::Contains("columns, but contains 5"));
+  CHECK_THROWS_WITH(PlinkMap(fiveCols), ContainsSubstring("columns, but contains 5"));
 
   // All genetic positions must be unsigned integers
   std::string noUnsigned = DATA_MODULE_TEST_DIR "/data/plink_map/no_unsigned.map";
-  CHECK_THROWS_WITH(PlinkMap(noUnsigned), Catch::Contains("line 2 column 4: expected unsigned integer but got"));
+  CHECK_THROWS_WITH(PlinkMap(noUnsigned), ContainsSubstring("line 2 column 4: expected unsigned integer but got"));
 
   // All genetic positions and physical positions must be strictly increasing
   std::string physicalPositions = DATA_MODULE_TEST_DIR "/data/plink_map/physical_positions.map";
@@ -41,7 +46,7 @@ TEST_CASE("PlinkMap: test exceptions", "[PlinkMap]") {
     std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
     auto map = PlinkMap(physicalPositions);
     std::string text = buffer.str();
-    CHECK_THAT(buffer.str(), Catch::Contains("physical positions are not strictly increasing"));
+    CHECK_THAT(buffer.str(), ContainsSubstring("physical positions are not strictly increasing"));
     std::cout.rdbuf(old);
   }
   {
@@ -49,7 +54,7 @@ TEST_CASE("PlinkMap: test exceptions", "[PlinkMap]") {
     std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
     auto map = PlinkMap(geneticPositions);
     std::string text = buffer.str();
-    CHECK_THAT(buffer.str(), Catch::Contains("genetic positions are not increasing"));
+    CHECK_THAT(buffer.str(), ContainsSubstring("genetic positions are not increasing"));
     std::cout.rdbuf(old);
   }
 }
@@ -88,9 +93,9 @@ TEST_CASE("PlinkMap: disambiguate from genetic map", "[PlinkMap]") {
   std::string geneticMapWithoutHeader3 = DATA_MODULE_TEST_DIR "/data/genetic_map/3_col.map";
   std::string geneticMapWithHeader4 = DATA_MODULE_TEST_DIR "/data/genetic_map/4_col_header.map";
 
-  CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader4), Catch::Contains("column 4: expected unsigned integer"));
-  CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader3), Catch::Contains("column 3: expected unsigned integer"));
-  CHECK_THROWS_WITH(PlinkMap(geneticMapWithHeader4), Catch::Contains("expected floating point but got"));
+  CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader4), ContainsSubstring("column 4: expected unsigned integer"));
+  CHECK_THROWS_WITH(PlinkMap(geneticMapWithoutHeader3), ContainsSubstring("column 3: expected unsigned integer"));
+  CHECK_THROWS_WITH(PlinkMap(geneticMapWithHeader4), ContainsSubstring("expected floating point but got"));
 }
 
 TEST_CASE("PlinkMap: warn on Mbp-cM range", "[PlinkMap]") {
@@ -100,7 +105,7 @@ TEST_CASE("PlinkMap: warn on Mbp-cM range", "[PlinkMap]") {
   std::stringstream buffer;
   std::streambuf* old = std::cout.rdbuf(buffer.rdbuf());
   auto map = PlinkMap(mapFile);
-  CHECK_THAT(buffer.str(), Catch::Contains("Warning: 33.3% of entries"));
+  CHECK_THAT(buffer.str(), ContainsSubstring("Warning: 33.3% of entries"));
   std::cout.rdbuf(old);
 }
 

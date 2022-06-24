@@ -4,7 +4,6 @@
   "homepage": "https://github.com/PalamaraLab/DataModule",
   "description": "Common functionality for handling StatGen data.",
   "dependencies": [
-    "catch2",
     "cxxopts",
     "eigen3",
     "fmt",

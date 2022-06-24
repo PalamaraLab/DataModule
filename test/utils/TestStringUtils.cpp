@@ -3,13 +3,16 @@
 
 #include "utils/StringUtils.hpp"
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <limits>
 #include <string>
 #include <vector>
 
 #include <fmt/core.h>
+
+using Catch::Matchers::ContainsSubstring;
 
 namespace asmc {
 
@@ -74,16 +77,16 @@ TEST_CASE("utils/StringUtils: test ulFromString", "[utils/StringUtils]") {
   const std::string maxUlAsString = fmt::format("{}", maxUlAsUl);
   CHECK(ulFromString(maxUlAsString) == maxUlAsUl);
 
-  CHECK_THROWS_WITH(ulFromString("1.23"), Catch::Contains("not representable as an unsigned integer"));
-  CHECK_THROWS_WITH(ulFromString("-7"), Catch::Contains("not representable as an unsigned integer"));
-  CHECK_THROWS_WITH(ulFromString("notanumber"), Catch::Contains("not representable as an unsigned integer"));
+  CHECK_THROWS_WITH(ulFromString("1.23"), ContainsSubstring("not representable as an unsigned integer"));
+  CHECK_THROWS_WITH(ulFromString("-7"), ContainsSubstring("not representable as an unsigned integer"));
+  CHECK_THROWS_WITH(ulFromString("notanumber"), ContainsSubstring("not representable as an unsigned integer"));
 }
 
 TEST_CASE("utils/StringUtils: test dblFromString", "[utils/StringUtils]") {
   CHECK(dblFromString("1.23") == 1.23);
   CHECK(dblFromString("-1234") == -1234.0);
 
-  CHECK_THROWS_WITH(dblFromString("notanumber"), Catch::Contains("not representable as a double"));
+  CHECK_THROWS_WITH(dblFromString("notanumber"), ContainsSubstring("not representable as a double"));
 }
 
 } // namespace asmc

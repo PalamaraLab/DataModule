@@ -34,8 +34,7 @@ set(
         EigenTypes.hpp
         utils/FileUtils.hpp
         utils/StringUtils.hpp
-        utils/VectorUtils.hpp
-)
+        utils/VectorUtils.hpp)
 
 set(
         data_module_public_hdr
